@@ -1,0 +1,6 @@
+﻿services:
+  stocktradingapplication:
+    image: stocktradingapplication
+    build:
+      context: .
+      dockerfile: Dockerfile
