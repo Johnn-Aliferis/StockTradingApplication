@@ -1,4 +1,5 @@
 using StockTradingApplication.Configuration;
+using StockTradingApplication.ExceptionHandlers.Handlers;
 using StockTradingApplication.Middleware;
 using StockTradingApplication.Services;
 
@@ -10,6 +11,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<StockClientOptions>(builder.Configuration.GetSection("StockClient"));
 builder.Services.AddHttpClient<StockService>();
+
+builder.Services.AddSingleton<ExceptionResponseFactory>();
+builder.Services.AddTransient<IStockService, StockService>();
 
 
 var app = builder.Build();
