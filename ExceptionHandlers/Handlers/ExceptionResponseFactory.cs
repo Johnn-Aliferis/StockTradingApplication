@@ -3,13 +3,16 @@ using StockTradingApplication.Exceptions;
 
 namespace StockTradingApplication.ExceptionHandlers.Handlers;
 
-public class ExceptionResponseFactory
+public class ExceptionResponseFactory(
+    ValidationExceptionHandler validationHandler,
+    StockClientExceptionHandler stockHandler,
+    GeneralExceptionHandler generalHandler)
 {
     private readonly Dictionary<Type, object> _handlers = new Dictionary<Type, object>()
     {
-        { typeof(ValidationException), new ValidationExceptionHandler() },
-        { typeof(StockClientException), new StockClientExceptionHandler() },
-        { typeof(GeneralException), new GeneralExceptionHandler() }
+        { typeof(ValidationException), validationHandler },
+        { typeof(StockClientException), stockHandler },
+        { typeof(GeneralException), generalHandler }
     };
 
     public async Task HandleResponseAsync(HttpContext context, Exception exception)

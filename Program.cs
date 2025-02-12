@@ -23,6 +23,9 @@ builder.Services.Configure<StockClientOptions>(builder.Configuration.GetSection(
 builder.Services.AddHttpClient<StockService>();
 
 builder.Services.AddSingleton<ExceptionResponseFactory>();
+builder.Services.AddSingleton<ValidationExceptionHandler>();
+builder.Services.AddSingleton<StockClientExceptionHandler>();
+builder.Services.AddSingleton<GeneralExceptionHandler>();
 builder.Services.AddTransient<IStockService, StockService>();
 
 
