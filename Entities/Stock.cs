@@ -6,7 +6,7 @@ namespace StockTradingApplication.Entities;
 [Table("stock")]
 public class Stock
 {
-    [Key] 
+    [Key]
     [Column("stock_id")]
     public long Id { get; set; }
     
@@ -28,11 +28,13 @@ public class Stock
     
     [Required]
     [Column("updated_at")]
-    public DateTime UpdatedAt { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     
     [Required]
     [Column("created_At")]
-    public DateTime CreatedAt { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     public virtual ICollection<StockHistory> StockHistories { get; set; }
 }

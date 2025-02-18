@@ -6,11 +6,11 @@ using StockTradingApplication.Exceptions;
 
 namespace StockTradingApplication.Services;
 
-public class StockService(HttpClient httpClient, IOptions<StockClientOptions> options) : IStockService
+public class ExternalStockService(HttpClient httpClient, IOptions<StockClientOptions> options) : IExternalStockService
 {
     private readonly string _baseUrl = options.Value.BaseUrl;
 
-    public async Task<IEnumerable<StockData>> GetStockData()
+    public async Task<IEnumerable<StockDataDto>> GetStockData()
     {
         var apiKey = Environment.GetEnvironmentVariable("API_KEY");
 
@@ -28,7 +28,7 @@ public class StockService(HttpClient httpClient, IOptions<StockClientOptions> op
                 throw new StockClientException("Error fetching stock data", response.StatusCode);
             }
 
-            var stockDataDictionary = await response.Content.ReadFromJsonAsync<Dictionary<string, StockData>>();
+            var stockDataDictionary = await response.Content.ReadFromJsonAsync<Dictionary<string, StockDataDto>>();
             return stockDataDictionary is null ? [] : [.. stockDataDictionary.Values];
         }
 

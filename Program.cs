@@ -3,6 +3,7 @@ using StockTradingApplication.Configuration;
 using StockTradingApplication.ExceptionHandlers.Handlers;
 using StockTradingApplication.Extensions;
 using StockTradingApplication.Middleware;
+using StockTradingApplication.Repository;
 using StockTradingApplication.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,13 +25,15 @@ builder.Services.AddQuartzJobs();
 
 // Options pattern 
 builder.Services.Configure<StockClientOptions>(builder.Configuration.GetSection("StockClient"));
-builder.Services.AddHttpClient<StockService>();
+builder.Services.AddHttpClient<ExternalStockService>();
 
 builder.Services.AddSingleton<ExceptionResponseFactory>();
 builder.Services.AddSingleton<ValidationExceptionHandler>();
 builder.Services.AddSingleton<StockClientExceptionHandler>();
 builder.Services.AddSingleton<GeneralExceptionHandler>();
-builder.Services.AddTransient<IStockService, StockService>();
+builder.Services.AddTransient<IExternalStockService, ExternalStockService>();
+builder.Services.AddTransient<IStockDbService, StockDbService>();
+builder.Services.AddTransient<IStockRepository, StockRepository>();
 
 var app = builder.Build();
 

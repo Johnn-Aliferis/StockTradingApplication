@@ -1,6 +1,6 @@
 ﻿namespace StockTradingApplication.DTOs;
 
-public class StockData
+public class StockDataDto
 {
     public required string Symbol { get; set; }
     public required string Name { get; set; }

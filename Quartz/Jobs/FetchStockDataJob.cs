@@ -1,17 +1,19 @@
 using Quartz;
+using StockTradingApplication.Mappers;
 using StockTradingApplication.Services;
 
 namespace StockTradingApplication.Quartz.Jobs;
 
-public class FetchStockDataJob(IStockService stockService) : IJob
+public class FetchStockDataJob(IExternalStockService externalStockService, IStockDbService stockDbService) : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
-        var stockData = await stockService.GetStockData();
+        var stockData = await externalStockService.GetStockData();
         
-        foreach (var stock in stockData)
+        foreach (var stockDataDto in stockData)
         {
-            Console.WriteLine(stock.Symbol);
+            var stock = StockMapper.ToStockEntity(stockDataDto);
+            await stockDbService.SaveOrUpdateStockAsync(stock);
         }
         
         await Task.CompletedTask;
