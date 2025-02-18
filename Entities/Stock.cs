@@ -18,15 +18,19 @@ public class Stock
     [Column("stock_name")]
     public string Name { get; set; }
     
+    [Required]
     [Column("stock_price")]
     public decimal Price { get; set; }
     
+    [Required]
     [Column("stock_currency")]
     public string Currency { get; set; }
     
+    [Required]
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; }
     
+    [Required]
     [Column("created_At")]
     public DateTime CreatedAt { get; set; }
     
