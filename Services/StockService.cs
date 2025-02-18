@@ -28,18 +28,14 @@ public class StockService(HttpClient httpClient, IOptions<StockClientOptions> op
                 throw new StockClientException("Error fetching stock data", response.StatusCode);
             }
 
-            var stockData = await response.Content.ReadFromJsonAsync<IEnumerable<StockData>>();
-
-            return stockData ?? new List<StockData>();
+            var stockDataDictionary = await response.Content.ReadFromJsonAsync<Dictionary<string, StockData>>();
+            return stockDataDictionary is null ? [] : [.. stockDataDictionary.Values];
         }
-        
+
         catch (Exception ex)
         {
-            throw new StockClientException("An error occurred while making the HTTP request.", HttpStatusCode.InternalServerError);
+            throw new StockClientException("An error occurred while making the HTTP request.",
+                HttpStatusCode.InternalServerError);
         }
     }
 }
-
-// 1) Code first with entity framework.
-// 2) Stock Data Fetcher service (classic interface architecture , later pass on mediators) -- Periodic Job
-// 3) For the above , ask ai if for example we should / can use other design patterns , or just plain service-repository pattern.

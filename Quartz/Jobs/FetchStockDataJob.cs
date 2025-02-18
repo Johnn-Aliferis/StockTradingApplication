@@ -1,12 +1,19 @@
 using Quartz;
+using StockTradingApplication.Services;
 
 namespace StockTradingApplication.Quartz.Jobs;
 
-public class FetchStockDataJob : IJob
+public class FetchStockDataJob(IStockService stockService) : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
-        Console.WriteLine($"Hello, World! - {DateTime.Now}");
+        var stockData = await stockService.GetStockData();
+        
+        foreach (var stock in stockData)
+        {
+            Console.WriteLine(stock.Symbol);
+        }
+        
         await Task.CompletedTask;
     }
 }
