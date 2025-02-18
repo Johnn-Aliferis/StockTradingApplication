@@ -16,9 +16,13 @@ if (builder.Environment.IsDevelopment())
     Env.Load();
 }
 
-//For Database
+// For Database
 builder.Services.AddDatabaseServices();
 
+// For scheduled job
+builder.Services.AddQuartzJobs();
+
+// Options pattern 
 builder.Services.Configure<StockClientOptions>(builder.Configuration.GetSection("StockClient"));
 builder.Services.AddHttpClient<StockService>();
 
@@ -27,7 +31,6 @@ builder.Services.AddSingleton<ValidationExceptionHandler>();
 builder.Services.AddSingleton<StockClientExceptionHandler>();
 builder.Services.AddSingleton<GeneralExceptionHandler>();
 builder.Services.AddTransient<IStockService, StockService>();
-
 
 var app = builder.Build();
 
