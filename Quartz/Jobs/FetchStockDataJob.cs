@@ -12,8 +12,9 @@ public class FetchStockDataJob(IExternalStockService externalStockService, IStoc
         
         foreach (var stockDataDto in stockData)
         {
-            var stock = StockMapper.ToStockEntity(stockDataDto);
-            await stockDbService.SaveOrUpdateStockAsync(stock);
+            // var stock = StockMapper.ToStockEntity(stockDataDto);
+            // await stockDbService.SaveOrUpdateStockAsync(stock);
+            // todo : continue next time and call the appropriate methods here.
         }
         
         await Task.CompletedTask;

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using StockTradingApplication.Data;
+using StockTradingApplication.Persistence;
 
 namespace StockTradingApplication.Extensions;
 

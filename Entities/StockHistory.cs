@@ -19,6 +19,9 @@ public class StockHistory
     public DateTime CreatedAt { get; set; }
     
     [Required]
-    [ForeignKey("stock_id")]
+    [Column("stock_id")]
+    public long StockId { get; set; }
+
+    [ForeignKey("StockId")]
     public virtual Stock Stock { get; set; }
 }

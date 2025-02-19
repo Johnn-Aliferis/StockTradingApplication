@@ -1,13 +1,16 @@
+using System.Net;
 using Microsoft.EntityFrameworkCore;
-using StockTradingApplication.Data;
 using StockTradingApplication.Entities;
+using StockTradingApplication.Exceptions;
+using StockTradingApplication.Persistence;
 
 namespace StockTradingApplication.Repository;
 
 public class StockRepository(AppDbContext context) : IStockRepository
 {
     private readonly DbSet<Stock> _stocks = context.Set<Stock>();
-    
+    private readonly DbSet<StockHistory> _stockHistories = context.Set<StockHistory>();
+
 
     public async Task<List<Stock>> GetStocksAsync()
     {
@@ -19,23 +22,23 @@ public class StockRepository(AppDbContext context) : IStockRepository
         return await _stocks.FirstOrDefaultAsync(s => s.Symbol == symbol);
     }
 
-    public async Task SaveOrUpdateStockAsync(Stock stock)
+    public async Task HandleInsertAndUpdateBulkOperationAsync(List<Stock> stocksToInsert,
+        List<Stock> stocksToUpdate, List<StockHistory> stocksToInsertHistory)
     {
-        var existingStock = _stocks.FirstOrDefault(s => s.Symbol == stock.Symbol);
-
-        if (existingStock != null)
+        await using var transaction = await context.Database.BeginTransactionAsync();
+        try
         {
-            existingStock.Price = stock.Price;
-            existingStock.Name = stock.Name;
-            existingStock.Currency = stock.Currency;
-            existingStock.UpdatedAt = DateTime.UtcNow;
-            _stocks.Update(existingStock);
+            _stocks.AddRange(stocksToInsert);
+            _stocks.UpdateRange(stocksToUpdate);
+            _stockHistories.AddRange(stocksToInsertHistory);
+            
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
         }
-        else
+        catch (Exception e)
         {
-            await _stocks.AddAsync(stock);
+            await transaction.RollbackAsync();
+            throw new GeneralException($"An error occured while inserting stocks: {e.Message}" ,HttpStatusCode.InternalServerError);
         }
-
-        await context.SaveChangesAsync();
     }
 }

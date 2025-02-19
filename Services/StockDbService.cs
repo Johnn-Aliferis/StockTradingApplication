@@ -1,3 +1,5 @@
+using System.Text;
+using StockTradingApplication.DTOs;
 using StockTradingApplication.Entities;
 using StockTradingApplication.Repository;
 
@@ -15,11 +17,44 @@ public class StockDbService(IStockRepository stockRepository) : IStockDbService
     {
         return await stockRepository.GetStockAsync(symbol);
     }
-
-    public async Task SaveOrUpdateStockAsync(Stock stock)
+    public async Task HandleExternalProviderData(List<StockDataDto> externalStockData)
     {
-        await stockRepository.SaveOrUpdateStockAsync(stock);
-        // need to also see what happens and best practise for the history of stocks :
-        // what is best practise  ?  What if we have maaaany stocks , how do we address that ? we cant loop a thousand times ...!
+        var existingStocks = await GetStocksAsync();
+        var existingStockSymbols = existingStocks.Select(s => s.Symbol).ToHashSet();
+        var stockHistories = new List<StockHistory>();
+
+        var stocksToInsert = externalStockData.Where(dto => !existingStockSymbols.Contains(dto.Symbol)).ToList();
+        var stocksToUpdate = externalStockData.Where(dto => existingStockSymbols.Contains(dto.Symbol)).ToList();
+        var dateNow = DateTime.UtcNow;
+
+        // Insert new stocks
+        var newStocks = stocksToInsert.Select(s => new Stock
+        {
+            Symbol = s.Symbol,
+            Price = s.Close,
+            Name = s.Name,
+            Currency = s.Currency,
+        }).ToList();
+        
+        // Update existing stocks and create history records
+        foreach (var stock in existingStocks)
+        {
+            var updatedStock = stocksToUpdate.First(s => s.Symbol == stock.Symbol);
+            stock.Symbol = updatedStock.Symbol;
+            stock.Name = updatedStock.Name;
+            stock.Price = updatedStock.Close;
+            stock.UpdatedAt = dateNow;
+            
+            // Create history record
+            var stockHistory = new StockHistory
+            {
+                Price = stock.Price,
+                CreatedAt = dateNow,
+                StockId = stock.Id
+            };
+            stockHistories.Add(stockHistory);
+        }
+        // Perform bulk operations
+        await stockRepository.HandleInsertAndUpdateBulkOperationAsync(newStocks, existingStocks, stockHistories);
     }
 }
