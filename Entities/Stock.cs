@@ -32,7 +32,7 @@ public class Stock
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     
     [Required]
-    [Column("created_At")]
+    [Column("created_at")]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     

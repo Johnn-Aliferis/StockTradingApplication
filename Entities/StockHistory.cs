@@ -15,7 +15,7 @@ public class StockHistory
     public decimal Price { get; set; }
     
     [Required]
-    [Column("created_At")]
+    [Column("created_at")]
     public DateTime CreatedAt { get; set; }
     
     [Required]
