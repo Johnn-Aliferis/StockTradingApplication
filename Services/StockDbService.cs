@@ -65,7 +65,7 @@ public class StockDbService(IStockRepository stockRepository) : IStockDbService
 
         sql.Append(string.Join(",", values));
         sql.Append(") AS source (symbol, name, price, currency, created_at, updated_at) ");
-        sql.Append("ON target.symbol = source.symbol ");
+        sql.Append("ON target.stock_symbol = source.symbol ");
 
         sql.Append("WHEN MATCHED THEN UPDATE SET ");
         sql.Append("stock_name = source.name, ");
@@ -88,7 +88,7 @@ public class StockDbService(IStockRepository stockRepository) : IStockDbService
             return new SqlQueryDto(string.Empty, []);
         }
         
-        var sql = new StringBuilder("INSERT INTO stock_history (stock_id, price, created_at) SELECT id, price, @p0 FROM stock WHERE symbol IN (");
+        var sql = new StringBuilder("INSERT INTO stock_history (stock_id, stock_price, created_at) SELECT stock_id, stock_price, @p0 FROM stock WHERE stock_symbol IN (");
         var parameters = new List<object> { DateTime.UtcNow };
         
         var index = 1;
