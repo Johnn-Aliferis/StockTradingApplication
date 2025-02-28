@@ -41,9 +41,8 @@ public class StockRepository(AppDbContext context, ILogger<StockRepository> logg
         }
         catch (Exception e)
         {
-            // Logging to be added via decorator patter later .
             await transaction.RollbackAsync();
-            throw new GeneralException($"An error occured while inserting stocks: {e.Message}" ,HttpStatusCode.InternalServerError);
+            throw;
         }
     }
 
