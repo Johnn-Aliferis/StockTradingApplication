@@ -28,15 +28,17 @@ public class StockDbService(IStockRepository stockRepository) : IStockDbService
             .Where(dto => existingStockSymbolsSet.Contains(dto.Symbol))
             .Select(dto => dto.Symbol)
             .ToList();
+        
+        var dateNow = DateTime.UtcNow;
 
-        var mergeSqlQueryDto = GenerateBulkMergeStockQuery(externalStockData);
-        var historySqlQueryDto = GenerateBulkInsertStockHistoryQuery(stocksToUpdateSymbols);
+        var mergeSqlQueryDto = GenerateBulkMergeStockQuery(externalStockData, dateNow);
+        var historySqlQueryDto = GenerateBulkInsertStockHistoryQuery(externalStockData, dateNow);
         
         // Perform bulk operations
         await stockRepository.HandleInsertAndUpdateBulkOperationAsync(mergeSqlQueryDto , historySqlQueryDto);
     }
     
-    private static SqlQueryDto GenerateBulkMergeStockQuery(List<StockDataDto> stockList)
+    private static SqlQueryDto GenerateBulkMergeStockQuery(List<StockDataDto> stockList, DateTime dateNow)
     {
         if (stockList.Count == 0)
         {
@@ -46,7 +48,6 @@ public class StockDbService(IStockRepository stockRepository) : IStockDbService
         var sql = new StringBuilder("MERGE INTO stock AS target USING (VALUES ");
         var parameters = new List<object>();
         var values = new List<string>();
-        var dateNow = DateTime.UtcNow;
 
         var index = 0;
         foreach (var stock in stockList)
@@ -66,11 +67,12 @@ public class StockDbService(IStockRepository stockRepository) : IStockDbService
         sql.Append(string.Join(",", values));
         sql.Append(") AS source (symbol, name, price, currency, created_at, updated_at) ");
         sql.Append("ON target.stock_symbol = source.symbol ");
-
-        sql.Append("WHEN MATCHED THEN UPDATE SET ");
-        sql.Append("stock_name = source.name, ");
+        
+        sql.Append("WHEN MATCHED AND (");
+        sql.Append("target.stock_price IS DISTINCT FROM source.price "); 
+        
+        sql.Append(") THEN UPDATE SET "); 
         sql.Append("stock_price = source.price, ");
-        sql.Append("stock_currency = source.currency, ");
         sql.Append("updated_at = source.updated_at ");
 
         sql.Append("WHEN NOT MATCHED THEN INSERT (stock_symbol, stock_name, stock_price, stock_currency, created_at, updated_at) ");
@@ -79,31 +81,45 @@ public class StockDbService(IStockRepository stockRepository) : IStockDbService
         return new SqlQueryDto(sql.ToString(), parameters.ToArray());
     }
     
-    
-    
-    private static SqlQueryDto GenerateBulkInsertStockHistoryQuery(List<string> existingSymbols)
+    private static SqlQueryDto GenerateBulkInsertStockHistoryQuery(List<StockDataDto> stockList, DateTime dateNow)
     {
-        if (existingSymbols.Count == 0)
+        if (stockList.Count == 0)
         {
             return new SqlQueryDto(string.Empty, []);
         }
         
-        var sql = new StringBuilder("INSERT INTO stock_history (stock_id, stock_price, created_at) SELECT stock_id, stock_price, @p0 FROM stock WHERE stock_symbol IN (");
-        var parameters = new List<object> { DateTime.UtcNow };
+        var sql = new StringBuilder();
+        var parameters = new List<object>();
+        var values = new List<string>();
         
-        var index = 1;
-        var symbolParams = new List<string>();
-
-        foreach (var symbol in existingSymbols)
+        sql.Append("WITH UpdatedRows AS ( ");
+        sql.Append("SELECT target.stock_id, target.stock_symbol, target.stock_name, target.stock_price, target.stock_currency ");
+        sql.Append("FROM stock AS target ");
+        sql.Append("INNER JOIN (VALUES ");
+        
+        var index = 0;
+        foreach (var stock in stockList)
         {
-            var paramName = $"@p{index}";
-            symbolParams.Add(paramName);
-            parameters.Add(symbol);
-            index++;
+            values.Add($"(@p{index}, @p{index + 1}, @p{index + 2}, @p{index + 3})");
+
+            parameters.Add(stock.Symbol);     
+            parameters.Add(stock.Name);       
+            parameters.Add(stock.Close);      
+            parameters.Add(stock.Currency);   
+            index += 4;
         }
 
-        sql.Append(string.Join(",", symbolParams));
-        sql.Append(");");
+        sql.Append(string.Join(",", values));
+        sql.Append(") ");
+        sql.Append("AS source (symbol, name, price, currency) ");
+        sql.Append("ON target.stock_symbol = source.symbol ");
+        sql.Append("WHERE target.stock_price <> source.price ");
+        sql.Append(") ");
+        
+        sql.Append("INSERT INTO stock_history (stock_price, created_at, stock_id) ");
+        sql.Append("SELECT stock_price, @p" + index + ", stock_id FROM UpdatedRows;");
+        parameters.Add(dateNow);
+
 
         return new SqlQueryDto(sql.ToString(), parameters.ToArray());
     }

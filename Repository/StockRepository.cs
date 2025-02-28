@@ -34,8 +34,8 @@ public class StockRepository(AppDbContext context, ILogger<StockRepository> logg
         
         try
         {
-            await PersistQueryAsync(mergeSqlQueryDto);
             await PersistQueryAsync(historySqlQueryDto);
+            await PersistQueryAsync(mergeSqlQueryDto);
             
             await transaction.CommitAsync();
         }
