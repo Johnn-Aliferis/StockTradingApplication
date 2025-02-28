@@ -21,16 +21,8 @@ public class StockDbService(IStockRepository stockRepository) : IStockDbService
     
     public async Task HandleExternalProviderData(List<StockDataDto> externalStockData)
     {
-        var existingStockSymbols =  await stockRepository.GetSymbolsAsync();
-        var existingStockSymbolsSet = existingStockSymbols.ToHashSet();
-        
-        var stocksToUpdateSymbols = externalStockData
-            .Where(dto => existingStockSymbolsSet.Contains(dto.Symbol))
-            .Select(dto => dto.Symbol)
-            .ToList();
-        
         var dateNow = DateTime.UtcNow;
-
+        
         var mergeSqlQueryDto = GenerateBulkMergeStockQuery(externalStockData, dateNow);
         var historySqlQueryDto = GenerateBulkInsertStockHistoryQuery(externalStockData, dateNow);
         
