@@ -5,18 +5,18 @@ using StockTradingApplication.Repository;
 
 namespace StockTradingApplication.Services;
 
-public class StockDbService(IStockWriterRepository stockWriterRepository, IStockReaderRepository stockReaderRepository) : IStockDbService
+public class StockDbService(IStockRepository stockRepository) : IStockDbService
 
 {
     
     public async Task<List<Stock>> GetStocksAsync()
     {
-        return await stockReaderRepository.GetStocksAsync();
+        return await stockRepository.GetStocksAsync();
     }
 
     public async Task<Stock?> GetStockAsync(string symbol)
     {
-        return await stockReaderRepository.GetStockAsync(symbol);
+        return await stockRepository.GetStockAsync(symbol);
     }
     
     public async Task HandleExternalProviderData(List<StockDataDto> externalStockData)
@@ -27,7 +27,7 @@ public class StockDbService(IStockWriterRepository stockWriterRepository, IStock
         var historySqlQueryDto = GenerateBulkInsertStockHistoryQuery(externalStockData, dateNow);
         
         // Perform bulk operations
-        await stockWriterRepository.HandleInsertAndUpdateBulkOperationAsync(mergeSqlQueryDto , historySqlQueryDto);
+        await stockRepository.HandleInsertAndUpdateBulkOperationAsync(mergeSqlQueryDto , historySqlQueryDto);
     }
     
     private static SqlQueryDto GenerateBulkMergeStockQuery(List<StockDataDto> stockList, DateTime dateNow)
