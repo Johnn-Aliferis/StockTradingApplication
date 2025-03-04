@@ -72,9 +72,9 @@ public class StockDbService(IStockRepository stockRepository) : IStockDbService
         sql.Append("updated_at = source.updated_at ");
 
         sql.Append("WHEN NOT MATCHED THEN INSERT (stock_symbol, stock_name, stock_price, stock_currency, created_at, updated_at) ");
-        sql.Append("VALUES (source.symbol, source.name, source.price, source.currency, source.created_at, source.updated_at);");
+        sql.Append("VALUES (source.symbol, source.name, source.price, source.currency, source.created_at, source.updated_at) ");
         
-        sql.Append("RETURNING target.stock_symbol, target.stock_name, target.stock_price, target.stock_currency;");
+        sql.Append("RETURNING target.stock_id, target.stock_symbol, target.stock_name, target.stock_price, target.stock_currency, target.updated_at , target.created_at;");
         
         return new SqlQueryDto(sql.ToString(), parameters.ToArray());
     }

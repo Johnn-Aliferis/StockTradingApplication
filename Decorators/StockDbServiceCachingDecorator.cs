@@ -8,7 +8,7 @@ namespace StockTradingApplication.Decorators;
 public class StockDbServiceCachingDecorator(
     IStockDbService decoratedService,
     IDistributedCache cache,
-    Logger<StockDbServiceCachingDecorator> logger) : IStockDbService
+    ILogger<StockDbServiceCachingDecorator> logger) : IStockDbService
 {
     public async Task<List<StockDataDto>> GetStocksAsync()
     {

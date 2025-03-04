@@ -9,7 +9,7 @@
 #      - "5050:5050"   # Debug
 
   postgres:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     container_name: stock_trading_DB
     ports:
       - "5432:5432"
