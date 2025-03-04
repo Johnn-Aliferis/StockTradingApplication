@@ -1,13 +1,11 @@
-using System.Net;
 using Microsoft.EntityFrameworkCore;
 using StockTradingApplication.DTOs;
 using StockTradingApplication.Entities;
-using StockTradingApplication.Exceptions;
 using StockTradingApplication.Persistence;
 
 namespace StockTradingApplication.Repository;
 
-public class StockRepository(AppDbContext context, ILogger<StockRepository> logger) : IStockRepository
+public class StockRepository(AppDbContext context, ILogger<StockRepository> logger) : IStockWriterRepository, IStockReaderRepository
 {
     private readonly DbSet<Stock> _stocks = context.Set<Stock>();
     private readonly DbSet<StockHistory> _stockHistories = context.Set<StockHistory>();

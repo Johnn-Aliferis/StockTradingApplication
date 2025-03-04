@@ -4,7 +4,11 @@ using StockTradingApplication.Repository;
 
 namespace StockTradingApplication.Decorators;
 
-public class StockRepositoryLoggingDecorator(IStockRepository decoratedRepository, ILogger<StockRepositoryLoggingDecorator> logger) : IStockRepository
+public class StockRepositoryLoggingDecorator(
+    IStockWriterRepository decoratedWriterRepository,
+    IStockReaderRepository decoratedReaderRepository,
+    ILogger<StockRepositoryLoggingDecorator> logger)
+    : IStockWriterRepository, IStockReaderRepository 
 {
 
     public async Task<List<Stock>> GetStocksAsync()
@@ -12,7 +16,7 @@ public class StockRepositoryLoggingDecorator(IStockRepository decoratedRepositor
         try
         {
             logger.LogInformation("Fetching all stocks from database at {Timestamp}.", DateTime.UtcNow);
-            var result = await decoratedRepository.GetStocksAsync();
+            var result = await decoratedReaderRepository.GetStocksAsync();
             logger.LogInformation("Successfully fetched {Count} stocks at {Timestamp}.", result.Count, DateTime.UtcNow);
             return result;
         }
@@ -28,7 +32,7 @@ public class StockRepositoryLoggingDecorator(IStockRepository decoratedRepositor
         try
         {
             logger.LogInformation("Fetching all stock symbols from database at {Timestamp}.", DateTime.UtcNow);
-            var result = await decoratedRepository.GetSymbolsAsync();
+            var result = await decoratedReaderRepository.GetSymbolsAsync();
             logger.LogInformation("Successfully fetched {Count} stock symbols at {Timestamp}.", result.Count,
                 DateTime.UtcNow);
             return result;
@@ -45,7 +49,7 @@ public class StockRepositoryLoggingDecorator(IStockRepository decoratedRepositor
         try
         {
             logger.LogInformation("Fetching stock by symbol from database at {Timestamp}.", DateTime.UtcNow);
-            var result = await decoratedRepository.GetStockAsync(symbol);
+            var result = await decoratedReaderRepository.GetStockAsync(symbol);
             if (result == null)
             {
                 logger.LogInformation("No stock found for symbol {Symbol}.", symbol);
@@ -66,7 +70,7 @@ public class StockRepositoryLoggingDecorator(IStockRepository decoratedRepositor
         try
         {
             logger.LogInformation("Starting bulk insert/update operation at {Timestamp}.", DateTime.UtcNow);
-            await decoratedRepository.HandleInsertAndUpdateBulkOperationAsync(mergeSqlQueryDto, historySqlQueryDto);
+            await decoratedWriterRepository.HandleInsertAndUpdateBulkOperationAsync(mergeSqlQueryDto, historySqlQueryDto);
             logger.LogInformation("Successfully completed bulk insert/update operation at {Timestamp}.", DateTime.UtcNow);
         }
         catch (Exception e)
