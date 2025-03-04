@@ -6,7 +6,6 @@ namespace StockTradingApplication.Repository;
 public interface IStockRepository
 {
     Task<List<Stock>> GetStocksAsync();
-    Task<List<string>> GetSymbolsAsync();
-    Task<Stock?> GetStockAsync(string symbol); 
-    Task HandleInsertAndUpdateBulkOperationAsync(SqlQueryDto mergeSqlQueryDto, SqlQueryDto historySqlQueryDto);
+    Task<Stock?> GetStockAsync(string symbol);
+    Task<List<Stock>> HandleInsertAndUpdateBulkOperationAsync(SqlQueryDto mergeSqlQueryDto, SqlQueryDto historySqlQueryDto);
 }

@@ -32,10 +32,10 @@ public class ExternalStockService(HttpClient httpClient, IOptions<StockClientOpt
             return stockDataDictionary is null ? [] : [.. stockDataDictionary.Values];
         }
 
-        catch (Exception ex)
+        catch (StockClientException ex)
         {
             throw new StockClientException("An error occurred while making the HTTP request.",
-                HttpStatusCode.InternalServerError);
+                ex.Status);
         }
     }
 }

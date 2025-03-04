@@ -1,6 +1,6 @@
 using System.Text;
 using StockTradingApplication.DTOs;
-using StockTradingApplication.Entities;
+using StockTradingApplication.Mappers;
 using StockTradingApplication.Repository;
 
 namespace StockTradingApplication.Services;
@@ -9,17 +9,19 @@ public class StockDbService(IStockRepository stockRepository) : IStockDbService
 
 {
     
-    public async Task<List<Stock>> GetStocksAsync()
+    public async Task<List<StockDataDto>> GetStocksAsync()
     {
-        return await stockRepository.GetStocksAsync();
+        var stocks = await stockRepository.GetStocksAsync();
+        return stocks.Select(StockMapper.ToStockDto).ToList();
     }
 
-    public async Task<Stock?> GetStockAsync(string symbol)
+    public async Task<StockDataDto?> GetStockAsync(string symbol)
     {
-        return await stockRepository.GetStockAsync(symbol);
+        var stock = await stockRepository.GetStockAsync(symbol);
+        return stock is not null ? StockMapper.ToStockDto(stock) : null;
     }
     
-    public async Task HandleExternalProviderData(List<StockDataDto> externalStockData)
+    public async Task<List<StockDataDto>> HandleExternalProviderData(List<StockDataDto> externalStockData)
     {
         var dateNow = DateTime.UtcNow;
         
@@ -27,7 +29,9 @@ public class StockDbService(IStockRepository stockRepository) : IStockDbService
         var historySqlQueryDto = GenerateBulkInsertStockHistoryQuery(externalStockData, dateNow);
         
         // Perform bulk operations
-        await stockRepository.HandleInsertAndUpdateBulkOperationAsync(mergeSqlQueryDto , historySqlQueryDto);
+        var result = await stockRepository.HandleInsertAndUpdateBulkOperationAsync(mergeSqlQueryDto , historySqlQueryDto);
+        
+        return result.Select(StockMapper.ToStockDto).ToList();
     }
     
     private static SqlQueryDto GenerateBulkMergeStockQuery(List<StockDataDto> stockList, DateTime dateNow)
@@ -69,7 +73,9 @@ public class StockDbService(IStockRepository stockRepository) : IStockDbService
 
         sql.Append("WHEN NOT MATCHED THEN INSERT (stock_symbol, stock_name, stock_price, stock_currency, created_at, updated_at) ");
         sql.Append("VALUES (source.symbol, source.name, source.price, source.currency, source.created_at, source.updated_at);");
-
+        
+        sql.Append("RETURNING target.stock_symbol, target.stock_name, target.stock_price, target.stock_currency;");
+        
         return new SqlQueryDto(sql.ToString(), parameters.ToArray());
     }
     

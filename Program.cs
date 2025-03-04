@@ -21,6 +21,15 @@ if (builder.Environment.IsDevelopment())
 // For Database
 builder.Services.AddDatabaseServices();
 
+// For Redis-Cache
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    var redisConnection = Environment.GetEnvironmentVariable("REDIS_CONNECTION");
+    options.Configuration = redisConnection;
+    options.InstanceName = "StockCache_";
+});
+
+
 // For scheduled job
 builder.Services.AddQuartzJobs();
 
@@ -36,6 +45,7 @@ builder.Services.AddTransient<IExternalStockService, ExternalStockService>();
 builder.Services.AddTransient<IStockDbService, StockDbService>();
 builder.Services.AddTransient<IStockRepository, StockRepository>();
 builder.Services.Decorate<IStockRepository, StockRepositoryLoggingDecorator>();
+builder.Services.Decorate<IStockDbService, StockDbServiceCachingDecorator>();
 
 var app = builder.Build();
 

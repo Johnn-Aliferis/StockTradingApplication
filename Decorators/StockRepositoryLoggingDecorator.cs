@@ -23,23 +23,6 @@ public class StockRepositoryLoggingDecorator(IStockRepository decoratedRepositor
         }
     }
 
-    public async Task<List<string>> GetSymbolsAsync()
-    {
-        try
-        {
-            logger.LogInformation("Fetching all stock symbols from database at {Timestamp}.", DateTime.UtcNow);
-            var result = await decoratedRepository.GetSymbolsAsync();
-            logger.LogInformation("Successfully fetched {Count} stock symbols at {Timestamp}.", result.Count,
-                DateTime.UtcNow);
-            return result;
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "Error while fetching stock symbols at {Timestamp}.", DateTime.UtcNow);
-            throw;
-        }
-    }
-
     public async Task<Stock?> GetStockAsync(string symbol)
     {
         try
@@ -61,13 +44,14 @@ public class StockRepositoryLoggingDecorator(IStockRepository decoratedRepositor
         }
     }
 
-    public async Task HandleInsertAndUpdateBulkOperationAsync(SqlQueryDto mergeSqlQueryDto, SqlQueryDto historySqlQueryDto)
+    public async Task<List<Stock>> HandleInsertAndUpdateBulkOperationAsync(SqlQueryDto mergeSqlQueryDto, SqlQueryDto historySqlQueryDto)
     {
         try
         {
             logger.LogInformation("Starting bulk insert/update operation at {Timestamp}.", DateTime.UtcNow);
-            await decoratedRepository.HandleInsertAndUpdateBulkOperationAsync(mergeSqlQueryDto, historySqlQueryDto);
+            var result = await decoratedRepository.HandleInsertAndUpdateBulkOperationAsync(mergeSqlQueryDto, historySqlQueryDto);
             logger.LogInformation("Successfully completed bulk insert/update operation at {Timestamp}.", DateTime.UtcNow);
+            return result;
         }
         catch (Exception e)
         {

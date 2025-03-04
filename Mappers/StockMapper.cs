@@ -15,4 +15,15 @@ public static class StockMapper
             Currency = stockDataDto.Currency,
         };
     }
+    
+    public static StockDataDto ToStockDto(Stock stock)
+    {
+        return new StockDataDto
+        {
+            Close = stock.Price,
+            Currency = stock.Currency,
+            Name = stock.Name,
+            Symbol = stock.Symbol,
+        };
+    }
 }
