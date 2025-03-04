@@ -34,11 +34,8 @@ builder.Services.AddSingleton<StockClientExceptionHandler>();
 builder.Services.AddSingleton<GeneralExceptionHandler>();
 builder.Services.AddTransient<IExternalStockService, ExternalStockService>();
 builder.Services.AddTransient<IStockDbService, StockDbService>();
-builder.Services.AddTransient<IStockReaderRepository, StockRepository>();
-builder.Services.AddTransient<IStockWriterRepository, StockRepository>();
-
-builder.Services.Decorate<IStockReaderRepository, StockRepositoryLoggingDecorator>();
-builder.Services.Decorate<IStockWriterRepository, StockRepositoryLoggingDecorator>();
+builder.Services.AddTransient<IStockRepository, StockRepository>();
+builder.Services.Decorate<IStockRepository, StockRepositoryLoggingDecorator>();
 
 var app = builder.Build();
 
