@@ -26,7 +26,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 {
     var redisConnection = Environment.GetEnvironmentVariable("REDIS_CONNECTION");
     options.Configuration = redisConnection;
-    options.InstanceName = "StockCache_";
+    // options.InstanceName = "StockCache_";
 });
 
 

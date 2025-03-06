@@ -1,14 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
+using StockTradingApplication.DTOs;
+using StockTradingApplication.Services;
 
 namespace StockTradingApplication.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class WeatherForecastController(ILogger<WeatherForecastController> logger) : ControllerBase
+public class WeatherForecastController(ILogger<WeatherForecastController> logger, IStockDbService stockDbService) : ControllerBase
 {
-    [HttpGet("hello-world",Name = "hello-world-route")]
-    public Task<string> GetHelloWorld()
+    [HttpGet("stock-data/{symbol}", Name ="stock-data-route")]
+    public Task<StockDataDto?> GetHelloWorld(string symbol)
     {
-        return  Task.FromResult("Hello World");
+        return stockDbService.GetStockAsync(symbol);
     }
 }
