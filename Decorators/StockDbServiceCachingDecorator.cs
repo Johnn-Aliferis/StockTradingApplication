@@ -68,17 +68,7 @@ public class StockDbServiceCachingDecorator(
             return updatedStocks;
         }
 
-        var batch = updatedStocks
-            .Select(
-                stock => cache.SetStringAsync(
-                $"{stock.Symbol}",
-                JsonSerializer.Serialize(stock),
-                new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = null }
-            ))
-            .ToList();
-        
-        await Task.WhenAll(batch);
-
+        await UpdateStockCacheAsync(stockDataDtos);
         await UpdateFullStockCacheAsync(stockDataDtos);
         
         return updatedStocks;
@@ -93,5 +83,19 @@ public class StockDbServiceCachingDecorator(
         {
             AbsoluteExpirationRelativeToNow = null
         });
+    }
+    
+    private async Task UpdateStockCacheAsync(List<StockDataDto> updatedStocks)
+    {
+        var batch = updatedStocks
+            .Select(
+                stock => cache.SetStringAsync(
+                    $"{stock.Symbol}",
+                    JsonSerializer.Serialize(stock),
+                    new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = null }
+                ))
+            .ToList();
+        
+        await Task.WhenAll(batch);
     }
 }
