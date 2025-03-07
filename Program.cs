@@ -26,7 +26,6 @@ builder.Services.AddStackExchangeRedisCache(options =>
 {
     var redisConnection = Environment.GetEnvironmentVariable("REDIS_CONNECTION");
     options.Configuration = redisConnection;
-    // options.InstanceName = "StockCache_";
 });
 
 
@@ -44,6 +43,8 @@ builder.Services.AddSingleton<GeneralExceptionHandler>();
 builder.Services.AddTransient<IExternalStockService, ExternalStockService>();
 builder.Services.AddTransient<IStockDbService, StockDbService>();
 builder.Services.AddTransient<IStockRepository, StockRepository>();
+builder.Services.AddTransient<IStockHistoryRepository, StockHistoryRepository>();
+builder.Services.AddTransient<IStockHistoryService, StockHistoryService>();
 builder.Services.Decorate<IStockRepository, StockRepositoryLoggingDecorator>();
 builder.Services.Decorate<IStockDbService, StockDbServiceCachingDecorator>();
 

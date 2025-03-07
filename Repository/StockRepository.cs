@@ -8,8 +8,6 @@ namespace StockTradingApplication.Repository;
 public class StockRepository(AppDbContext context) : IStockRepository
 {
     private readonly DbSet<Stock> _stocks = context.Set<Stock>();
-    private readonly DbSet<StockHistory> _stockHistories = context.Set<StockHistory>();
-
 
     public async Task<List<Stock>> GetStocksAsync()
     {

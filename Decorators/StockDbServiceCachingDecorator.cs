@@ -47,6 +47,13 @@ public class StockDbServiceCachingDecorator(
         
         logger.LogInformation("Fetching stocks from database");
         var stock = await decoratedService.GetStockAsync(symbol);
+        
+        if (stock is null)
+        {
+            logger.LogInformation("Stock not found in database, returning null without caching.");
+            return null;
+        }
+        
         var cacheValue = JsonSerializer.Serialize(stock);
         
         logger.LogInformation("Persisting stocks into Redis");
