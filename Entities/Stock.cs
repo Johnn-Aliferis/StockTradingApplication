@@ -36,5 +36,5 @@ public class Stock
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
-    public virtual ICollection<StockHistory> StockHistories { get; set; }
+    public ICollection<StockHistory> StockHistories { get; set; }
 }
