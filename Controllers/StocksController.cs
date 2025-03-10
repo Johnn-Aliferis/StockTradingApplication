@@ -9,21 +9,21 @@ namespace StockTradingApplication.Controllers;
 public class StocksController(IStockDbService stockDbService, IStockHistoryService stockHistoryService) : ControllerBase
 {
     [HttpGet]
-    public Task<List<StockDataDto>> GetAllStocks()
+    public async Task<List<StockDataDto>> GetAllStocks()
     {
-        return stockDbService.GetStocksAsync();
+        return await stockDbService.GetStocksAsync();
     }
-    
-    
-    [HttpGet("{symbol}", Name ="GetStockBySymbol")]
-    public Task<StockDataDto?> GetStockBySymbol(string symbol)
+
+
+    [HttpGet("{symbol}", Name = "GetStockBySymbol")]
+    public async Task<StockDataDto?> GetStockBySymbol(string symbol)
     {
-        return stockDbService.GetStockAsync(symbol);
+        return await stockDbService.GetStockAsync(symbol);
     }
-    
-    [HttpGet("{symbol}/history", Name ="GetStockHistory")]
-    public Task<List<StockHistoryDto>> GetStockHistory(string symbol)
+
+    [HttpGet("{symbol}/history", Name = "GetStockHistory")]
+    public async Task<List<StockHistoryDto>> GetStockHistory(string symbol)
     {
-        return stockHistoryService.GetStockHistoryAsync(symbol);
+        return await stockHistoryService.GetStockHistoryAsync(symbol);
     }
 }
