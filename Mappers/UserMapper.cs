@@ -5,9 +5,9 @@ namespace StockTradingApplication.Mappers;
 
 public class UserMapper
 {
-    public static User ToUserEntity(CreateUserDto createUserDto)
+    public static AppUser ToUserEntity(CreateUserDto createUserDto)
     {
-        return new User
+        return new AppUser
         {
             Username = createUserDto.Username
         };

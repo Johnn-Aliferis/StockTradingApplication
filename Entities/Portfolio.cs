@@ -16,11 +16,11 @@ public class Portfolio
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     [Required]
-    [ForeignKey("User")]
+    [ForeignKey("AppUser")]
     [Column("user_id")]
     public long UserId { get; set; }
     
-    public User User { get; set; } 
+    public AppUser AppUser { get; set; } 
     
     public ICollection<PortfolioTransaction> Transactions { get; set; }
     

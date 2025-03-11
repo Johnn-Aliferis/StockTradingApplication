@@ -6,14 +6,14 @@ namespace StockTradingApplication.Services;
 
 public class UserRepository(AppDbContext context) : IUserRepository
 {
-    private readonly DbSet<User> _user = context.Set<User>();
+    private readonly DbSet<AppUser> _user = context.Set<AppUser>();
     
-    public async Task<User?> GetUserAsync(string username)
+    public async Task<AppUser?> GetUserAsync(string username)
     {
         return await _user.FirstOrDefaultAsync(user => user.Username == username);
     }
 
-    public async Task<User> SaveUserAsync(User user)
+    public async Task<AppUser> SaveUserAsync(AppUser user)
     {
         var createdUser = await _user.AddAsync(user);
         await context.SaveChangesAsync();

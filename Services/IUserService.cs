@@ -5,5 +5,5 @@ namespace StockTradingApplication.Services;
 
 public interface IUserService
 {
-    Task<User> CreateUserAsync(CreateUserDto createUserDto);
+    Task<AppUser> CreateUserAsync(CreateUserDto createUserDto);
 }

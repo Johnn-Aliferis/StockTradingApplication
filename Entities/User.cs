@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StockTradingApplication.Entities;
 
-[Table("user")]
-public class User
+[Table("app_user")]
+public class AppUser
 {
     [Key]
     [Column("user_id")]

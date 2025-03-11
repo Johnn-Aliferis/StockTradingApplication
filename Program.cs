@@ -40,11 +40,15 @@ builder.Services.AddSingleton<ExceptionResponseFactory>();
 builder.Services.AddSingleton<ValidationExceptionHandler>();
 builder.Services.AddSingleton<StockClientExceptionHandler>();
 builder.Services.AddSingleton<GeneralExceptionHandler>();
+
 builder.Services.AddTransient<IExternalStockService, ExternalStockService>();
 builder.Services.AddTransient<IStockDbService, StockDbService>();
 builder.Services.AddTransient<IStockRepository, StockRepository>();
 builder.Services.AddTransient<IStockHistoryRepository, StockHistoryRepository>();
 builder.Services.AddTransient<IStockHistoryService, StockHistoryService>();
+builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IUserRepository, UserRepository>();
+
 builder.Services.Decorate<IStockRepository, StockRepositoryLoggingDecorator>();
 builder.Services.Decorate<IStockDbService, StockDbServiceCachingDecorator>();
 
