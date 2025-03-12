@@ -4,19 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace StockTradingApplication.Entities;
 
 [Table("stock_history")]
-public class StockHistory
+public class StockHistory : BaseEntity
 {
-    [Key] 
-    [Column("stock_history_id")]
-    public long Id { get; set; }
-    
     [Required]
     [Column("stock_price")]
     public decimal Price { get; set; }
-    
-    [Required]
-    [Column("created_at")]
-    public DateTime CreatedAt { get; set; }
     
     [Required]
     [Column("stock_id")]

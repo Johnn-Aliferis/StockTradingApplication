@@ -1,20 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using StockTradingApplication.Entities;
 
 namespace StockTradingApplication.Entities;
 
 [Table("portfolio_holding")]
-public class PortfolioHolding
+public class PortfolioHolding : BaseEntity
 {
-    [Key]
-    [Column("portfolio_holding_id")]
-    public long Id { get; set; }
-    
-    [Required]
-    [Column("created_at")]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    
     [Column("stock_quantity")]
     public decimal Quantity { get; set; }
     

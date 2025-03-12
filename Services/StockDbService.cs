@@ -74,7 +74,7 @@ public class StockDbService(IStockRepository stockRepository) : IStockDbService
         sql.Append("WHEN NOT MATCHED THEN INSERT (stock_symbol, stock_name, stock_price, stock_currency, created_at, updated_at) ");
         sql.Append("VALUES (source.symbol, source.name, source.price, source.currency, source.created_at, source.updated_at) ");
         
-        sql.Append("RETURNING target.stock_id, target.stock_symbol, target.stock_name, target.stock_price, target.stock_currency, target.updated_at , target.created_at;");
+        sql.Append("RETURNING target.id, target.stock_symbol, target.stock_name, target.stock_price, target.stock_currency, target.created_at , target.updated_at;");
         
         return new SqlQueryDto(sql.ToString(), parameters.ToArray());
     }
@@ -91,7 +91,7 @@ public class StockDbService(IStockRepository stockRepository) : IStockDbService
         var values = new List<string>();
         
         sql.Append("WITH UpdatedRows AS ( ");
-        sql.Append("SELECT target.stock_id, target.stock_symbol, target.stock_name, target.stock_price, target.stock_currency ");
+        sql.Append("SELECT target.id, target.stock_symbol, target.stock_name, target.stock_price, target.stock_currency ");
         sql.Append("FROM stock AS target ");
         sql.Append("INNER JOIN (VALUES ");
         
@@ -114,8 +114,8 @@ public class StockDbService(IStockRepository stockRepository) : IStockDbService
         sql.Append("WHERE target.stock_price <> source.price ");
         sql.Append(") ");
         
-        sql.Append("INSERT INTO stock_history (stock_price, created_at, stock_id) ");
-        sql.Append("SELECT stock_price, @p" + index + ", stock_id FROM UpdatedRows;");
+        sql.Append("INSERT INTO stock_history (stock_price, created_at,updated_at, stock_id) ");
+        sql.Append("SELECT stock_price, @p" + index + ", @p" + index + ", id FROM UpdatedRows;");
         parameters.Add(dateNow);
 
 

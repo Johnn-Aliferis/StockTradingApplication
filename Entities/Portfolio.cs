@@ -1,20 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using StockTradingApplication.Entities;
 
 namespace StockTradingApplication.Entities;
 
 [Table("portfolio")]
-public class Portfolio
+public class Portfolio : BaseEntity
 {
-    [Key]
-    [Column("portfolio_id")]
-    public long Id { get; set; }
-    
-    [Required]
-    [Column("created_at")]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    
     [Required]
     [ForeignKey("AppUser")]
     [Column("user_id")]
