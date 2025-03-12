@@ -4,6 +4,7 @@ using StockTradingApplication.Decorators;
 using StockTradingApplication.ExceptionHandlers.Handlers;
 using StockTradingApplication.Extensions;
 using StockTradingApplication.Middleware;
+using StockTradingApplication.Profiles;
 using StockTradingApplication.Repository;
 using StockTradingApplication.Services;
 
@@ -51,6 +52,9 @@ builder.Services.AddTransient<IUserRepository, UserRepository>();
 
 builder.Services.Decorate<IStockRepository, StockRepositoryLoggingDecorator>();
 builder.Services.Decorate<IStockDbService, StockDbServiceCachingDecorator>();
+
+//Automapper 
+builder.Services.AddAutoMapper(typeof(StockProfile));
 
 var app = builder.Build();
 

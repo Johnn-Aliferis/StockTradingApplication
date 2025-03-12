@@ -1,24 +1,25 @@
 using System.Text;
+using AutoMapper;
 using StockTradingApplication.DTOs;
 using StockTradingApplication.Mappers;
 using StockTradingApplication.Repository;
 
 namespace StockTradingApplication.Services;
 
-public class StockDbService(IStockRepository stockRepository) : IStockDbService
+public class StockDbService(IStockRepository stockRepository, IMapper mapper) : IStockDbService
 
 {
     
     public async Task<List<StockDataDto>> GetStocksAsync()
     {
         var stocks = await stockRepository.GetStocksAsync();
-        return stocks.Select(StockMapper.ToStockDto).ToList();
+        return mapper.Map<List<StockDataDto>>(stocks);
     }
 
     public async Task<StockDataDto?> GetStockAsync(string symbol)
     {
         var stock = await stockRepository.GetStockAsync(symbol);
-        return stock is not null ? StockMapper.ToStockDto(stock) : null;
+        return stock is not null ? mapper.Map<StockDataDto>(stock) : null;
     }
     
     public async Task<List<StockDataDto>> HandleExternalProviderData(List<StockDataDto> externalStockData)
@@ -30,8 +31,8 @@ public class StockDbService(IStockRepository stockRepository) : IStockDbService
         
         // Perform bulk operations
         var result = await stockRepository.HandleInsertAndUpdateBulkOperationAsync(mergeSqlQueryDto , historySqlQueryDto);
-        
-        return result.Select(StockMapper.ToStockDto).ToList();
+
+        return mapper.Map<List<StockDataDto>>(result);
     }
     
     private static SqlQueryDto GenerateBulkMergeStockQuery(List<StockDataDto> stockList, DateTime dateNow)

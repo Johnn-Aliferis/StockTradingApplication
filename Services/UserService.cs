@@ -1,12 +1,11 @@
-using System.ComponentModel.DataAnnotations;
+using AutoMapper;
 using StockTradingApplication.DTOs;
 using StockTradingApplication.Entities;
-using StockTradingApplication.Mappers;
 using StockTradingApplication.Exceptions;
 
 namespace StockTradingApplication.Services;
 
-public class UserService(IUserRepository userRepository) : IUserService
+public class UserService(IUserRepository userRepository, IMapper mapper) : IUserService
 {
     private const string UserExists = "User already exists";
 
@@ -16,10 +15,10 @@ public class UserService(IUserRepository userRepository) : IUserService
 
         if (user != null)
         {
-            throw new Exceptions.ValidationException(UserExists);
+            throw new ValidationException(UserExists);
         }
 
-        var userCreated = UserMapper.ToUserEntity(createUserDto);
+        var userCreated = mapper.Map<AppUser>(createUserDto);
 
         return await userRepository.SaveUserAsync(userCreated);
     }
