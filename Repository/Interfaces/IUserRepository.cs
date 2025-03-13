@@ -1,6 +1,6 @@
 using StockTradingApplication.Entities;
 
-namespace StockTradingApplication.Services;
+namespace StockTradingApplication.Repository.Interfaces;
 
 public interface IUserRepository
 {

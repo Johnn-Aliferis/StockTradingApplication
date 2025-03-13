@@ -9,7 +9,11 @@ public class PortfolioTransaction : BaseEntity
 {
     [Required]
     [Column("stock_price_at_transaction")]
-    public decimal stockPriceAtTransaction { get; set; }
+    public decimal StockPriceAtTransaction { get; set; }
+    
+    [Required]
+    [Column("transaction_type")]
+    public string TransactionType { get; set; }
 
     [Required]
     [ForeignKey("Stock")]

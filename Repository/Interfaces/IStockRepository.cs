@@ -1,7 +1,7 @@
 using StockTradingApplication.DTOs;
 using StockTradingApplication.Entities;
 
-namespace StockTradingApplication.Repository;
+namespace StockTradingApplication.Repository.Interfaces;
 
 public interface IStockRepository
 {

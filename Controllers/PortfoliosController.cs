@@ -1,15 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
 using StockTradingApplication.DTOs;
+using StockTradingApplication.Services.Interfaces;
 
 namespace StockTradingApplication.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PortfoliosController : ControllerBase
+public class PortfoliosController(IPortfolioService portfolioService) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult> CreatePortfolio([FromBody] CreatePortfolioRequestDto portfolioRequest)
     {
-        return Ok();
+        var createdPortfolio = await portfolioService.CreatePortfolioAsync(portfolioRequest);
+        return Created($"api/portfolios/{createdPortfolio.Id}", createdPortfolio);
     }
 }

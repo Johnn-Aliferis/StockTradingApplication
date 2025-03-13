@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StockTradingApplication.Entities;
 using StockTradingApplication.Persistence;
+using StockTradingApplication.Repository.Interfaces;
 
-namespace StockTradingApplication.Repository;
+namespace StockTradingApplication.Repository.Implementations;
 
 public class StockHistoryRepository(AppDbContext context) : IStockHistoryRepository
 {

@@ -5,7 +5,8 @@ using StockTradingApplication.Extensions;
 using StockTradingApplication.Middleware;
 using StockTradingApplication.Options;
 using StockTradingApplication.Profiles;
-using StockTradingApplication.Repository;
+using StockTradingApplication.Repository.Implementations;
+using StockTradingApplication.Repository.Interfaces;
 using StockTradingApplication.Services;
 using StockTradingApplication.Services.Implementations;
 using StockTradingApplication.Services.Interfaces;
@@ -51,6 +52,9 @@ builder.Services.AddTransient<IStockHistoryRepository, StockHistoryRepository>()
 builder.Services.AddTransient<IStockHistoryService, StockHistoryService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddTransient<IPortfolioService, PortfolioService>();
+builder.Services.AddTransient<IPortfolioRepository, PortfolioRepository>();
+builder.Services.AddTransient<ValidationService>();
 
 builder.Services.Decorate<IStockRepository, StockRepositoryLoggingDecorator>();
 builder.Services.Decorate<IStockDbService, StockDbServiceCachingDecorator>();

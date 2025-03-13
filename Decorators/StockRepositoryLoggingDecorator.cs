@@ -1,6 +1,7 @@
 ﻿using StockTradingApplication.DTOs;
 using StockTradingApplication.Entities;
 using StockTradingApplication.Repository;
+using StockTradingApplication.Repository.Interfaces;
 
 namespace StockTradingApplication.Decorators;
 

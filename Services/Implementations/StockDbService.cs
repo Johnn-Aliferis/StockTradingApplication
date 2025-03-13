@@ -1,7 +1,7 @@
 using System.Text;
 using AutoMapper;
 using StockTradingApplication.DTOs;
-using StockTradingApplication.Repository;
+using StockTradingApplication.Repository.Interfaces;
 using StockTradingApplication.Services.Interfaces;
 
 namespace StockTradingApplication.Services.Implementations;

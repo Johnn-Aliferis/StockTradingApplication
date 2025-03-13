@@ -2,6 +2,7 @@ using AutoMapper;
 using StockTradingApplication.DTOs;
 using StockTradingApplication.Entities;
 using StockTradingApplication.Exceptions;
+using StockTradingApplication.Repository.Interfaces;
 using StockTradingApplication.Services.Interfaces;
 
 namespace StockTradingApplication.Services.Implementations;
