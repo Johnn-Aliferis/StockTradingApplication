@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using StockTradingApplication.DTOs;
-using StockTradingApplication.Mappers;
 using StockTradingApplication.Repository;
 
 namespace StockTradingApplication.Services;

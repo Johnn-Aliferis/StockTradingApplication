@@ -1,5 +1,4 @@
 using Quartz;
-using StockTradingApplication.Mappers;
 using StockTradingApplication.Services;
 
 namespace StockTradingApplication.Quartz.Jobs;

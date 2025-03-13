@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using Microsoft.Extensions.Options;
-using StockTradingApplication.Configuration;
+using StockTradingApplication.Options;
 using StockTradingApplication.DTOs;
 using StockTradingApplication.Exceptions;
 

@@ -1,5 +1,5 @@
 using DotNetEnv;
-using StockTradingApplication.Configuration;
+using StockTradingApplication.Options;
 using StockTradingApplication.Decorators;
 using StockTradingApplication.ExceptionHandlers.Handlers;
 using StockTradingApplication.Extensions;
@@ -55,6 +55,8 @@ builder.Services.Decorate<IStockDbService, StockDbServiceCachingDecorator>();
 
 //Automapper 
 builder.Services.AddAutoMapper(typeof(StockProfile));
+builder.Services.AddAutoMapper(typeof(StockHistoryProfile));
+builder.Services.AddAutoMapper(typeof(UserProfile));
 
 var app = builder.Build();
 

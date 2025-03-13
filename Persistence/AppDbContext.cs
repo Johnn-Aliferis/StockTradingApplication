@@ -17,6 +17,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             modelBuilder.Entity(entityType);
         }
+        
+        // Apply configurations via IEntityTypeConfiguration
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
     
     // For each entity modified , update updated_at column to date time now.utc

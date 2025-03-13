@@ -14,6 +14,8 @@ public class Portfolio : BaseEntity
     
     public AppUser AppUser { get; set; } 
     
+    public PortfolioBalance Balance { get; set; } 
+    
     public ICollection<PortfolioTransaction> Transactions { get; set; }
     
     public ICollection<PortfolioHolding> Holdings { get; set; }
