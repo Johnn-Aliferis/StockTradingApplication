@@ -1,6 +1,6 @@
 using StockTradingApplication.DTOs;
 
-namespace StockTradingApplication.Services;
+namespace StockTradingApplication.Services.Interfaces;
 
 public interface IStockDbService
 {

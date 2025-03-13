@@ -1,11 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
+using StockTradingApplication.DTOs;
 
 namespace StockTradingApplication.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PortfoliosController: ControllerBase
+public class PortfoliosController : ControllerBase
 {
-    // Todo : Create two methods , one for creating a portfolio and one for deleting it.
-    //      add also the appropriate validations , unique per user , etc 
+    [HttpPost]
+    public async Task<ActionResult> CreatePortfolio([FromBody] CreatePortfolioRequestDto portfolioRequest)
+    {
+        return Ok();
+    }
 }

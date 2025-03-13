@@ -1,6 +1,6 @@
 namespace StockTradingApplication.DTOs;
 
-public class CreateUserDto
+public class CreateUserRequestDto
 {
     public required string Username { get; set; }
 }

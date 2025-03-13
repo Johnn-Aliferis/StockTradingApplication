@@ -1,12 +1,14 @@
 using DotNetEnv;
-using StockTradingApplication.Options;
 using StockTradingApplication.Decorators;
 using StockTradingApplication.ExceptionHandlers.Handlers;
 using StockTradingApplication.Extensions;
 using StockTradingApplication.Middleware;
+using StockTradingApplication.Options;
 using StockTradingApplication.Profiles;
 using StockTradingApplication.Repository;
 using StockTradingApplication.Services;
+using StockTradingApplication.Services.Implementations;
+using StockTradingApplication.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using StockTradingApplication.DTOs;
-using StockTradingApplication.Services;
+using StockTradingApplication.Services.Interfaces;
 
 namespace StockTradingApplication.Controllers;
 

@@ -3,8 +3,9 @@ using Microsoft.Extensions.Options;
 using StockTradingApplication.Options;
 using StockTradingApplication.DTOs;
 using StockTradingApplication.Exceptions;
+using StockTradingApplication.Services.Interfaces;
 
-namespace StockTradingApplication.Services;
+namespace StockTradingApplication.Services.Implementations;
 
 public class ExternalStockService(HttpClient httpClient, IOptions<StockClientOptions> options) : IExternalStockService
 {

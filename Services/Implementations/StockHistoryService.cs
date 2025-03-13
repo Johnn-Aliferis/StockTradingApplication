@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using StockTradingApplication.DTOs;
 using StockTradingApplication.Repository;
+using StockTradingApplication.Services.Interfaces;
 
-namespace StockTradingApplication.Services;
+namespace StockTradingApplication.Services.Implementations;
 
 public class StockHistoryService(IStockHistoryRepository stockHistoryRepository, IMapper mapper) : IStockHistoryService
 {

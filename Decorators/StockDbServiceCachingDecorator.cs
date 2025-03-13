@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using StockTradingApplication.DTOs;
-using StockTradingApplication.Services;
+using StockTradingApplication.Services.Interfaces;
 
 namespace StockTradingApplication.Decorators;
 

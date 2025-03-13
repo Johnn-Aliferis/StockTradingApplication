@@ -2,8 +2,9 @@ using System.Text;
 using AutoMapper;
 using StockTradingApplication.DTOs;
 using StockTradingApplication.Repository;
+using StockTradingApplication.Services.Interfaces;
 
-namespace StockTradingApplication.Services;
+namespace StockTradingApplication.Services.Implementations;
 
 public class StockDbService(IStockRepository stockRepository, IMapper mapper) : IStockDbService
 
