@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StockTradingApplication.Entities;
 
+[Table("portfolio_balance")]
 public class PortfolioBalance : BaseEntity
 {
 

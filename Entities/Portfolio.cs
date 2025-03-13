@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using StockTradingApplication.Entities;
 
 namespace StockTradingApplication.Entities;
 
@@ -11,6 +10,10 @@ public class Portfolio : BaseEntity
     [ForeignKey("AppUser")]
     [Column("user_id")]
     public long UserId { get; set; }
+    
+    [Required]
+    [Column("cash_balance")]
+    public decimal CashBalance { get; set; }
     
     public AppUser AppUser { get; set; } 
     
