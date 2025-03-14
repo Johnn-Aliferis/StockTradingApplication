@@ -10,7 +10,7 @@ public class ValidationExceptionHandler
         if (exception is ValidationException validationEx)
         {
             context.Response.StatusCode = (int)validationEx.Status;
-            var response = new { error = "ValidationException occurred.", details = exception.Message };
+            var response = new { error = "Validation Exception occurred.", details = exception.Message };
             await context.Response.WriteAsync(JsonSerializer.Serialize(response));
         }
     }

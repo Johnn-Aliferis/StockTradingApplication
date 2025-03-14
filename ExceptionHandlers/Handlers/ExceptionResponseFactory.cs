@@ -18,7 +18,7 @@ public class ExceptionResponseFactory(
     public async Task HandleResponseAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
-        var handler = _handlers[exception.GetType()];
+        var handler = _handlers.ContainsKey(exception.GetType()) ? _handlers[exception.GetType()] : null;
         switch (handler)
         {
             case ValidationExceptionHandler validationHandler:

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using StockTradingApplication.DTOs;
 using StockTradingApplication.Entities;
-using StockTradingApplication.Exceptions;
 using StockTradingApplication.Repository.Interfaces;
 using StockTradingApplication.Services.Interfaces;
 
@@ -9,23 +8,23 @@ namespace StockTradingApplication.Services.Implementations;
 
 public class PortfolioService(
     IMapper mapper,
-    IPortfolioRepository portfolioRepository) : IPortfolioService
+    IPortfolioRepository portfolioRepository,
+    IUserRepository userRepository) : IPortfolioService
 {
-    private const string PortfolioExists = "A Portfolio for this user already exists";
-
-    public async Task<Portfolio> CreatePortfolioAsync(CreatePortfolioRequestDto createPortfolioRequest)
+    public async Task<PortfolioResponseDto> CreatePortfolioAsync(CreatePortfolioRequestDto createPortfolioRequest)
     {
-        // TODO : Check in testing how it behaves if we pass something random ? I.e meaning the request field is null.
+        var user = await userRepository.GetUserByIdAsync(createPortfolioRequest.UserId);
+
         var existingPortfolio = await portfolioRepository.GetPortfolioAsync(createPortfolioRequest.UserId);
 
-        if (existingPortfolio != null)
-        {
-            throw new ValidationException(PortfolioExists);
-        }
+        ValidationService.ValidateCreatePortfolio(user!, existingPortfolio!);
 
         var portfolio = mapper.Map<Portfolio>(createPortfolioRequest);
+        portfolio.CashBalance = 0m;
 
-        return await portfolioRepository.SavePortfolioAsync(portfolio);
+        var savedPortfolio = await portfolioRepository.SavePortfolioAsync(portfolio);
+        
+        return mapper.Map<PortfolioResponseDto>(savedPortfolio);
     }
 
     public Task DeletePortfolioAsync(long portfolioId)

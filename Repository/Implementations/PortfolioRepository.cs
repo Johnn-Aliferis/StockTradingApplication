@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Net;
+using Microsoft.EntityFrameworkCore;
 using StockTradingApplication.Entities;
+using StockTradingApplication.Exceptions;
 using StockTradingApplication.Persistence;
 using StockTradingApplication.Repository.Interfaces;
 
@@ -27,6 +29,7 @@ public class PortfolioRepository(AppDbContext context, ILogger<PortfolioReposito
         try
         {
             await _portfolios.AddAsync(portfolio);
+            await context.SaveChangesAsync();
 
             var portfolioBalance = new PortfolioBalance
             {
@@ -44,7 +47,7 @@ public class PortfolioRepository(AppDbContext context, ILogger<PortfolioReposito
         {
             await transaction.RollbackAsync();
             logger.LogError("An error occurred with message : {}", ex.ToString());
-            throw;
+            throw new GeneralException("An unexpected error occurred during portfolio creation. ", HttpStatusCode.InternalServerError);
         }
     }
 }

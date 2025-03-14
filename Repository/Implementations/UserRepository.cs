@@ -14,6 +14,11 @@ public class UserRepository(AppDbContext context) : IUserRepository
         return await _user.FirstOrDefaultAsync(user => user.Username == username);
     }
 
+    public async Task<AppUser?> GetUserByIdAsync(long userId)
+    {
+        return await _user.FirstOrDefaultAsync(user => user.Id == userId);
+    }
+
     public async Task<AppUser> SaveUserAsync(AppUser user)
     {
         var createdUser = await _user.AddAsync(user);
