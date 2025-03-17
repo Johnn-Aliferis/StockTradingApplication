@@ -6,12 +6,14 @@ namespace StockTradingApplication.ExceptionHandlers.Handlers;
 public class ExceptionResponseFactory(
     ValidationExceptionHandler validationHandler,
     StockClientExceptionHandler stockHandler,
+    PortfolioExceptionHandler portfolioHandler,
     GeneralExceptionHandler generalHandler)
 {
     private readonly Dictionary<Type, object> _handlers = new Dictionary<Type, object>()
     {
         { typeof(ValidationException), validationHandler },
         { typeof(StockClientException), stockHandler },
+        { typeof(PortfolioException), portfolioHandler },
         { typeof(GeneralException), generalHandler }
     };
 
@@ -29,13 +31,17 @@ public class ExceptionResponseFactory(
                 await stockHandler.HandleResponseAsync(context, (StockClientException)exception);
                 break;
 
+            case PortfolioExceptionHandler portfolioExceptionHandler:
+                await portfolioExceptionHandler.HandleResponseAsync(context, (PortfolioException)exception);
+                break;
+            
             case GeneralExceptionHandler generalHandler:
                 await generalHandler.HandleResponseAsync(context, (GeneralException)exception);
                 break;
 
             default:
                 context.Response.StatusCode = 500;
-                var response = new { error = "An unexpected error occurred." };
+                var response = new { error = $"An Exception of {exception.GetType()} occurred.", details = exception.Message};
                 await context.Response.WriteAsync(JsonSerializer.Serialize(response));
                 break;
         }

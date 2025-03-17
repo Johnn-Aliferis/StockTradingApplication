@@ -1,6 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Net;
+using AutoMapper;
 using StockTradingApplication.DTOs;
 using StockTradingApplication.Entities;
+using StockTradingApplication.Exceptions;
 using StockTradingApplication.Repository.Interfaces;
 using StockTradingApplication.Services.Interfaces;
 
@@ -23,12 +25,19 @@ public class PortfolioService(
         portfolio.CashBalance = 0m;
 
         var savedPortfolio = await portfolioRepository.SavePortfolioAsync(portfolio);
-        
+
         return mapper.Map<PortfolioResponseDto>(savedPortfolio);
     }
 
-    public Task DeletePortfolioAsync(long portfolioId)
+    public async Task DeletePortfolioAsync(long portfolioId)
     {
-        throw new NotImplementedException();
+        var existingPortfolio = await portfolioRepository.FindPortfolioById(portfolioId);
+
+        if (existingPortfolio is null)
+        {
+            throw new PortfolioException($"Portfolio with ID {portfolioId} not found", HttpStatusCode.NotFound);
+        }
+
+        await portfolioRepository.DeletePortfolioAsync(existingPortfolio);
     }
 }

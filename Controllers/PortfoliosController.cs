@@ -14,4 +14,11 @@ public class PortfoliosController(IPortfolioService portfolioService) : Controll
         var createdPortfolio = await portfolioService.CreatePortfolioAsync(portfolioRequest);
         return Created($"api/portfolios/{createdPortfolio.Id}", createdPortfolio);
     }
+    
+    [HttpDelete("{portfolioId:long}")]
+    public async Task<ActionResult> DeletePortfolio(long portfolioId)
+    {
+        await portfolioService.DeletePortfolioAsync(portfolioId);
+        return NoContent();
+    }
 }

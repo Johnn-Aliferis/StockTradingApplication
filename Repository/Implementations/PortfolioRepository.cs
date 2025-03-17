@@ -17,9 +17,15 @@ public class PortfolioRepository(AppDbContext context, ILogger<PortfolioReposito
         return await _portfolios.FirstOrDefaultAsync(portfolio => portfolio.UserId == userId);
     }
 
-    public Task DeletePortfolioAsync(long portfolioId)
+    public async Task<Portfolio?> FindPortfolioById(long portfolioId)
     {
-        throw new NotImplementedException();
+        return await _portfolios.FindAsync(portfolioId);
+    }
+
+    public async Task DeletePortfolioAsync(Portfolio portfolio)
+    {
+        _portfolios.Remove(portfolio);
+        await context.SaveChangesAsync();
     }
 
     public async Task<Portfolio> SavePortfolioAsync(Portfolio portfolio)
@@ -47,7 +53,7 @@ public class PortfolioRepository(AppDbContext context, ILogger<PortfolioReposito
         {
             await transaction.RollbackAsync();
             logger.LogError("An error occurred with message : {}", ex.ToString());
-            throw new GeneralException("An unexpected error occurred during portfolio creation. ", HttpStatusCode.InternalServerError);
+            throw new PortfolioException("An unexpected error occurred during portfolio creation. ", HttpStatusCode.InternalServerError);
         }
     }
 }

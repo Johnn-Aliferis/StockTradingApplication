@@ -41,9 +41,11 @@ builder.Services.AddQuartzJobs();
 builder.Services.Configure<StockClientOptions>(builder.Configuration.GetSection("StockClient"));
 builder.Services.AddHttpClient<ExternalStockService>();
 
+//Custom Exceptions
 builder.Services.AddSingleton<ExceptionResponseFactory>();
 builder.Services.AddSingleton<ValidationExceptionHandler>();
 builder.Services.AddSingleton<StockClientExceptionHandler>();
+builder.Services.AddSingleton<PortfolioExceptionHandler>();
 builder.Services.AddSingleton<GeneralExceptionHandler>();
 
 builder.Services.AddTransient<IExternalStockService, ExternalStockService>();
