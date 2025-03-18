@@ -15,6 +15,9 @@ public class Portfolio : BaseEntity
     [Column("cash_balance")]
     public decimal CashBalance { get; set; }
     
+    [Timestamp]
+    public byte[] RowVersion { get; set; }
+    
     public AppUser AppUser { get; set; } 
     
     public PortfolioBalance Balance { get; set; } 

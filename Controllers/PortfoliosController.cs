@@ -16,7 +16,7 @@ public class PortfoliosController(IPortfolioService portfolioService) : Controll
     }
     
     [HttpDelete("{portfolioId:long}")]
-    public async Task<ActionResult> DeletePortfolio(long portfolioId)
+    public async Task<IActionResult> DeletePortfolio(long portfolioId)
     {
         await portfolioService.DeletePortfolioAsync(portfolioId);
         return NoContent();
