@@ -9,4 +9,6 @@ public interface IPortfolioRepository
     Task DeletePortfolioAsync(Portfolio portfolioId);
     
     Task<Portfolio> SavePortfolioAsync(Portfolio portfolio);
+    Task<PortfolioBalance?> FindPortfolioBalanceByPortfolioId(long portfolioId);
+    Task<PortfolioHolding?> FindPortfolioHoldingByPortfolioId(long portfolioId, long stockId);
 }

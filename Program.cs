@@ -2,6 +2,7 @@ using DotNetEnv;
 using StockTradingApplication.Decorators;
 using StockTradingApplication.Entities;
 using StockTradingApplication.ExceptionHandlers.Handlers;
+using StockTradingApplication.Exceptions;
 using StockTradingApplication.Extensions;
 using StockTradingApplication.Middleware;
 using StockTradingApplication.Options;
@@ -46,6 +47,7 @@ builder.Services.AddSingleton<ExceptionResponseFactory>();
 builder.Services.AddSingleton<ValidationExceptionHandler>();
 builder.Services.AddSingleton<StockClientExceptionHandler>();
 builder.Services.AddSingleton<PortfolioExceptionHandler>();
+builder.Services.AddSingleton<PortfolioTransactionException>();
 builder.Services.AddSingleton<GeneralExceptionHandler>();
 
 builder.Services.AddTransient<IExternalStockService, ExternalStockService>();
@@ -67,6 +69,8 @@ builder.Services.AddAutoMapper(typeof(StockProfile));
 builder.Services.AddAutoMapper(typeof(StockHistoryProfile));
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(Portfolio));
+builder.Services.AddAutoMapper(typeof(PortfolioBalance));
+builder.Services.AddAutoMapper(typeof(PortfolioHolding));
 
 var app = builder.Build();
 

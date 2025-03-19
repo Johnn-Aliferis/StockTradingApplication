@@ -7,6 +7,7 @@ public class ExceptionResponseFactory(
     ValidationExceptionHandler validationHandler,
     StockClientExceptionHandler stockHandler,
     PortfolioExceptionHandler portfolioHandler,
+    PortfolioTransactionExceptionHandler portfolioTransactionHandler,
     GeneralExceptionHandler generalHandler)
 {
     private readonly Dictionary<Type, object> _handlers = new Dictionary<Type, object>()
@@ -14,6 +15,7 @@ public class ExceptionResponseFactory(
         { typeof(ValidationException), validationHandler },
         { typeof(StockClientException), stockHandler },
         { typeof(PortfolioException), portfolioHandler },
+        { typeof(PortfolioTransactionException), portfolioTransactionHandler },
         { typeof(GeneralException), generalHandler }
     };
 
@@ -34,14 +36,19 @@ public class ExceptionResponseFactory(
             case PortfolioExceptionHandler portfolioExceptionHandler:
                 await portfolioExceptionHandler.HandleResponseAsync(context, (PortfolioException)exception);
                 break;
-            
+
+            case PortfolioTransactionExceptionHandler portfolioTransactionHandler:
+                await portfolioTransactionHandler.HandleResponseAsync(context, (PortfolioException)exception);
+                break;
+
             case GeneralExceptionHandler generalHandler:
                 await generalHandler.HandleResponseAsync(context, (GeneralException)exception);
                 break;
 
             default:
                 context.Response.StatusCode = 500;
-                var response = new { error = $"An Exception of {exception.GetType()} occurred.", details = exception.Message};
+                var response = new
+                    { error = $"An Exception of {exception.GetType()} occurred.", details = exception.Message };
                 await context.Response.WriteAsync(JsonSerializer.Serialize(response));
                 break;
         }

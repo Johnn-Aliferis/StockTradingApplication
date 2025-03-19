@@ -40,4 +40,22 @@ public class PortfolioService(
 
         await portfolioRepository.DeletePortfolioAsync(existingPortfolio);
     }
+
+    public async Task<PortfolioResponseDto?> GetPortfolioAsync(long portfolioId)
+    {
+        var existingPortfolio = await portfolioRepository.FindPortfolioById(portfolioId);
+        return existingPortfolio is not null ? mapper.Map<PortfolioResponseDto>(existingPortfolio) : null;
+    }
+
+    public async Task<PortfolioBalanceResponseDto?> GetPortfolioBalanceAsync(long portfolioId)
+    {
+        var portfolioBalance = await portfolioRepository.FindPortfolioBalanceByPortfolioId(portfolioId);
+        return portfolioBalance is not null ? mapper.Map<PortfolioBalanceResponseDto>(portfolioBalance) : null;
+    }
+    
+    public async Task<PortfolioHoldingResponseDto?> GetPortfolioHoldingAsync(long portfolioId, long stockId)
+    {
+        var portfolioHolding = await portfolioRepository.FindPortfolioHoldingByPortfolioId(portfolioId, stockId);
+        return portfolioHolding is not null ? mapper.Map<PortfolioHoldingResponseDto>(portfolioHolding) : null;
+    }
 }

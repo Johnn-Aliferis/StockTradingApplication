@@ -11,6 +11,7 @@ public class PortfolioRepository(AppDbContext context, ILogger<PortfolioReposito
 {
     private readonly DbSet<Portfolio> _portfolios = context.Set<Portfolio>();
     private readonly DbSet<PortfolioBalance> _portfoliosBalances = context.Set<PortfolioBalance>();
+    private readonly DbSet<PortfolioHolding> _portfoliosHoldings = context.Set<PortfolioHolding>();
 
     public async Task<Portfolio?> GetPortfolioAsync(long userId)
     {
@@ -55,5 +56,16 @@ public class PortfolioRepository(AppDbContext context, ILogger<PortfolioReposito
             logger.LogError("An error occurred with message : {}", ex.ToString());
             throw new PortfolioException("An unexpected error occurred during portfolio creation. ", HttpStatusCode.InternalServerError);
         }
+    }
+
+    public async Task<PortfolioBalance?> FindPortfolioBalanceByPortfolioId(long portfolioId)
+    {
+        return await _portfoliosBalances.FirstOrDefaultAsync(balance => balance.PortfolioId == portfolioId);
+    }
+    
+    public async Task<PortfolioHolding?> FindPortfolioHoldingByPortfolioId(long portfolioId, long stockId)
+    {
+        return await _portfoliosHoldings.FirstOrDefaultAsync(holding =>
+            holding.PortfolioId == portfolioId && holding.StockId == stockId);
     }
 }

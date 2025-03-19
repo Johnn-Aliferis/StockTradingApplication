@@ -1,4 +1,5 @@
-﻿using StockTradingApplication.DTOs;
+﻿using System.Net;
+using StockTradingApplication.DTOs;
 using StockTradingApplication.Entities;
 using StockTradingApplication.Exceptions;
 
