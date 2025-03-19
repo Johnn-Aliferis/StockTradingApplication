@@ -1,12 +1,18 @@
-﻿using StockTradingApplication.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using StockTradingApplication.Entities;
+using StockTradingApplication.Persistence;
 using StockTradingApplication.Repository.Interfaces;
 
 namespace StockTradingApplication.Repository.Implementations;
 
-public class PortfolioTransactionRepository : IPortfolioTransactionRepository
+public class PortfolioTransactionRepository(AppDbContext context) : IPortfolioTransactionRepository
 {
-    public Task<PortfolioTransaction?> CreateTransaction(PortfolioTransaction portfolioTransaction)
+    private readonly DbSet<PortfolioTransaction> _transactions = context.Set<PortfolioTransaction>();
+
+    public async Task<PortfolioTransaction?> CreateTransaction(PortfolioTransaction portfolioTransaction)
     {
-        throw new NotImplementedException();
+        var createdTransaction = await _transactions.AddAsync(portfolioTransaction);
+        await context.SaveChangesAsync();
+        return createdTransaction.Entity;
     }
 }

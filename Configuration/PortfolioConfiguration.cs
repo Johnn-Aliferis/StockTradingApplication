@@ -19,10 +19,5 @@ public class PortfolioConfiguration : IEntityTypeConfiguration<Portfolio>
         builder.HasMany(p => p.Holdings)
             .WithOne(ph => ph.Portfolio)
             .OnDelete(DeleteBehavior.Cascade);
-        
-        // Portfolio --> Balance
-        builder.HasOne(p => p.Balance)
-            .WithOne(pb => pb.Portfolio)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -1,6 +1,10 @@
 ﻿using System.Net;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using StockTradingApplication.Common;
 using StockTradingApplication.DTOs;
+using StockTradingApplication.Entities;
 using StockTradingApplication.Exceptions;
 using StockTradingApplication.Repository.Interfaces;
 using StockTradingApplication.Services.Interfaces;
@@ -9,52 +13,88 @@ namespace StockTradingApplication.Services.Implementations;
 
 public class PortfolioTransactionService(
     IUnitOfWork unitOfWork,
-    IPortfolioService portfolioService,
-    IStockDbService stockDbService, 
-    ILogger<PortfolioTransactionService> logger)
+    IPortfolioRepository portfolioRepository,
+    IStockRepository stockRepository,
+    IPortfolioTransactionRepository portfolioTransactionRepository)
     : IPortfolioTransactionService
 {
-    public async Task<IActionResult> BuyStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto,
+    public async Task BuyStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto,
         long portfolioId)
     {
         ValidationService.ValidateTransactionRequestInput(portfolioTransactionRequestDto);
-        await ValidateBuyStock(portfolioTransactionRequestDto, portfolioId);
-        throw new NotImplementedException();
+        await HandleBuyStock(portfolioTransactionRequestDto, portfolioId);
     }
 
-    public async Task<IActionResult> SellStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto,
+    public async Task SellStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto,
         long portfolioId)
     {
         ValidationService.ValidateTransactionRequestInput(portfolioTransactionRequestDto);
-        await ValidateSellStock(portfolioTransactionRequestDto, portfolioId);
-        throw new NotImplementedException();
-    }
-
-    
-    private async Task ValidateSellStock(PortfolioTransactionRequestDto portfolioTransactionRequestDto, long portfolioId)
-    {
-        var stockData = await GetStockDataByGivenSymbolAsync(portfolioTransactionRequestDto.Symbol);
-        var portfolioHoldingData = await GetPortfolioHoldingByGivenId(portfolioId, stockData.Id);
-        ValidateQuantity(portfolioTransactionRequestDto, portfolioHoldingData);
-    }
-
-    private async Task ValidateBuyStock(PortfolioTransactionRequestDto portfolioTransactionRequestDto, long portfolioId)
-    {
         var portfolioData = await GetPortfolioByGivenId(portfolioId);
-        var stockData = await GetStockDataByGivenSymbolAsync(portfolioTransactionRequestDto.Symbol);
-        ValidateFunds(portfolioTransactionRequestDto, portfolioData, stockData);
+
+        throw new NotImplementedException();
     }
 
-    private static void ValidateFunds(PortfolioTransactionRequestDto portfolioTransactionRequestDto,
-        PortfolioResponseDto portfolioData, StockDataDto stockData)
+    private async Task HandleBuyStock(PortfolioTransactionRequestDto portfolioTransactionRequestDto, long portfolioId)
     {
-        var requestedPrice = portfolioTransactionRequestDto.Quantity * stockData.Close;
+        var portfolio = await GetPortfolioByGivenId(portfolioId);
+        var stockData = await GetStockDataByGivenSymbolAsync(portfolioTransactionRequestDto.Symbol);
 
-        if (portfolioData.CashBalance < requestedPrice)
+        var requestedPrice = portfolioTransactionRequestDto.Quantity * stockData.Price;
+
+        // Validation for sufficient funds
+        if (portfolio.CashBalance < requestedPrice)
         {
             throw new PortfolioTransactionException("Insufficient funds to complete transaction",
                 HttpStatusCode.BadRequest);
         }
+
+        await unitOfWork.BeginTransactionAsync();
+        try
+        {
+            portfolio.CashBalance -= requestedPrice;
+
+            // Creating corresponding transaction
+            var transaction = new PortfolioTransaction
+            {
+                StockPriceAtTransaction = stockData.Price,
+                PortfolioId = portfolioId,
+                TransactionType = TransactionTypeEnum.Buy.ToString(),
+                StockId = stockData.Id,
+            };
+            await portfolioTransactionRepository.CreateTransaction(transaction);
+
+            // Finding holding if exists
+            var portfolioHolding =
+                await portfolioRepository.FindPortfolioHoldingByPortfolioId(portfolioId, stockData.Id);
+
+            if (portfolioHolding is null)
+            {
+                portfolioHolding = new PortfolioHolding
+                {
+                    Quantity = portfolioTransactionRequestDto.Quantity,
+                    PortfolioId = portfolioId,
+                    StockId = stockData.Id
+                };
+                // Explicitly add the new holding to the repository so it's tracked
+                await portfolioRepository.SavePortfolioHoldingAsync(portfolioHolding);
+            }
+            else
+            {
+                portfolioHolding.Quantity += portfolioTransactionRequestDto.Quantity;
+            }
+
+            await unitOfWork.CommitAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            await unitOfWork.RollbackAsync();
+            throw new PortfolioTransactionException("Portfolio has already been updated by another entity",
+                HttpStatusCode.Conflict);
+        }
+    }
+
+    private async Task HandleSellStock()
+    {
     }
     
     private static void ValidateQuantity(PortfolioTransactionRequestDto portfolioTransactionRequestDto,
@@ -67,9 +107,9 @@ public class PortfolioTransactionService(
         }
     }
 
-    private async Task<StockDataDto> GetStockDataByGivenSymbolAsync(string symbol)
+    private async Task<Stock> GetStockDataByGivenSymbolAsync(string symbol)
     {
-        var stock = await stockDbService.GetStockAsync(symbol);
+        var stock = await stockRepository.GetStockAsync(symbol);
 
         if (stock is null)
         {
@@ -79,9 +119,9 @@ public class PortfolioTransactionService(
         return stock;
     }
 
-    private async Task<PortfolioResponseDto> GetPortfolioByGivenId(long portfolioId)
+    private async Task<Portfolio> GetPortfolioByGivenId(long portfolioId)
     {
-        var portfolio = await portfolioService.GetPortfolioAsync(portfolioId);
+        var portfolio = await portfolioRepository.FindPortfolioById(portfolioId);
 
         if (portfolio is null)
         {
@@ -90,26 +130,17 @@ public class PortfolioTransactionService(
 
         return portfolio;
     }
-    
-    private async Task<PortfolioHoldingResponseDto> GetPortfolioHoldingByGivenId(long portfolioId, long stockId)
-    {
-        var portfolioHolding = await portfolioService.GetPortfolioHoldingAsync(portfolioId, stockId);
-
-        if (portfolioHolding is null)
-        {
-            throw new PortfolioException($"Portfolio Holding with for portfolio with ID {portfolioId} not found", HttpStatusCode.NotFound);
-        }
-
-        return portfolioHolding;
-    }
 
 
     // TODO : Algorithm for locking for selling/buying :
     //      1) Utility Validation --> Request is correct -- Done 
     //      2) Business Validation --> Portfolio existence , balance in portfolio is sufficient depending on action etc -- Done , needs testing!!
-    //      3) Begin Transaction 
-    //      4) Modify and call all repositories needed
-    //      5) Attempt to Save Changes --> RowVersion check for optimistic locking
-    //      6) If error , rollback and send message appropriate to user
+    //      3) Begin Transaction -- > Done for buying
+    //      4) Modify and call all repositories needed -- done for buying
+    //      5) Attempt to Save Changes --> RowVersion check for optimistic locking -- done for buying
+    //      6) If error , rollback and send message appropriate to user -- exception is thrown so we are good. 
     //      7) If all ok , Save changes in DB and notify User.
+    
+    // Todo : Implementation done for buy stock. Needs in every step manual testing to see if all is good. Also
+    //      Also to manually test again entire flow , because we have removed an entity !!! 
 }

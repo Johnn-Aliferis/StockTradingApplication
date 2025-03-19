@@ -5,7 +5,7 @@ namespace StockTradingApplication.Services.Interfaces;
 
 public interface IPortfolioTransactionService
 {
-    Task<IActionResult> BuyStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto, long portfolioId);
-    
-    Task<IActionResult> SellStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto, long portfolioId);
+    Task BuyStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto, long portfolioId);
+
+    Task SellStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto, long portfolioId);
 }

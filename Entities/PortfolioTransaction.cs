@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using StockTradingApplication.Entities;
 
 namespace StockTradingApplication.Entities;
 
@@ -13,7 +12,7 @@ public class PortfolioTransaction : BaseEntity
     
     [Required]
     [Column("transaction_type")]
-    public string TransactionType { get; set; }
+    public required string TransactionType { get; set; }
 
     [Required]
     [ForeignKey("Stock")]

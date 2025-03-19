@@ -69,7 +69,6 @@ builder.Services.AddAutoMapper(typeof(StockProfile));
 builder.Services.AddAutoMapper(typeof(StockHistoryProfile));
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(Portfolio));
-builder.Services.AddAutoMapper(typeof(PortfolioBalance));
 builder.Services.AddAutoMapper(typeof(PortfolioHolding));
 
 var app = builder.Build();

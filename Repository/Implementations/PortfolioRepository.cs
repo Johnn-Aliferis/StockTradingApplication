@@ -10,10 +10,9 @@ namespace StockTradingApplication.Repository.Implementations;
 public class PortfolioRepository(AppDbContext context, ILogger<PortfolioRepository> logger) : IPortfolioRepository
 {
     private readonly DbSet<Portfolio> _portfolios = context.Set<Portfolio>();
-    private readonly DbSet<PortfolioBalance> _portfoliosBalances = context.Set<PortfolioBalance>();
     private readonly DbSet<PortfolioHolding> _portfoliosHoldings = context.Set<PortfolioHolding>();
 
-    public async Task<Portfolio?> GetPortfolioAsync(long userId)
+    public async Task<Portfolio?> GetPortfolioByUserIdAsync(long userId)
     {
         return await _portfolios.FirstOrDefaultAsync(portfolio => portfolio.UserId == userId);
     }
@@ -31,38 +30,36 @@ public class PortfolioRepository(AppDbContext context, ILogger<PortfolioReposito
 
     public async Task<Portfolio> SavePortfolioAsync(Portfolio portfolio)
     {
-        // Utilizing transaction to ensure atomicity
-        await using var transaction = await context.Database.BeginTransactionAsync();
         try
         {
             await _portfolios.AddAsync(portfolio);
             await context.SaveChangesAsync();
-
-            var portfolioBalance = new PortfolioBalance
-            {
-                PortfolioId = portfolio.Id,
-                Balance = portfolio.CashBalance,
-            };
-
-            await _portfoliosBalances.AddAsync(portfolioBalance);
-            await context.SaveChangesAsync();
-            await transaction.CommitAsync();
-
             return portfolio;
         }
         catch (Exception ex)
         {
-            await transaction.RollbackAsync();
             logger.LogError("An error occurred with message : {}", ex.ToString());
-            throw new PortfolioException("An unexpected error occurred during portfolio creation. ", HttpStatusCode.InternalServerError);
+            throw new PortfolioException("An unexpected error occurred during portfolio creation. ",
+                HttpStatusCode.InternalServerError);
         }
     }
 
-    public async Task<PortfolioBalance?> FindPortfolioBalanceByPortfolioId(long portfolioId)
+    public async Task<PortfolioHolding> SavePortfolioHoldingAsync(PortfolioHolding portfolioHolding)
     {
-        return await _portfoliosBalances.FirstOrDefaultAsync(balance => balance.PortfolioId == portfolioId);
+        var existingHolding = await _portfoliosHoldings.FindAsync(portfolioHolding.Id);
+        if (existingHolding != null)
+        {
+            context.Entry(existingHolding).CurrentValues.SetValues(portfolioHolding);
+        }
+        else
+        {
+            await _portfoliosHoldings.AddAsync(portfolioHolding);
+        }
+
+        await context.SaveChangesAsync();
+        return portfolioHolding;
     }
-    
+
     public async Task<PortfolioHolding?> FindPortfolioHoldingByPortfolioId(long portfolioId, long stockId)
     {
         return await _portfoliosHoldings.FirstOrDefaultAsync(holding =>
