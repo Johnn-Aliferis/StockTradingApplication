@@ -1,6 +1,4 @@
 ﻿using System.Net;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StockTradingApplication.Common;
 using StockTradingApplication.DTOs;
@@ -18,23 +16,23 @@ public class PortfolioTransactionService(
     IPortfolioTransactionRepository portfolioTransactionRepository)
     : IPortfolioTransactionService
 {
-    public async Task BuyStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto,
+    public async Task<PortfolioTransaction> BuyStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto,
         long portfolioId)
     {
         ValidationService.ValidateTransactionRequestInput(portfolioTransactionRequestDto);
-        await HandleBuyStock(portfolioTransactionRequestDto, portfolioId);
+        return await HandleBuyStock(portfolioTransactionRequestDto, portfolioId);
     }
 
-    public async Task SellStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto,
+    public async Task<PortfolioTransaction> SellStockAsync(
+        PortfolioTransactionRequestDto portfolioTransactionRequestDto,
         long portfolioId)
     {
         ValidationService.ValidateTransactionRequestInput(portfolioTransactionRequestDto);
-        var portfolioData = await GetPortfolioByGivenId(portfolioId);
-
-        throw new NotImplementedException();
+        return await HandleSellStock(portfolioTransactionRequestDto, portfolioId);
     }
 
-    private async Task HandleBuyStock(PortfolioTransactionRequestDto portfolioTransactionRequestDto, long portfolioId)
+    private async Task<PortfolioTransaction> HandleBuyStock(
+        PortfolioTransactionRequestDto portfolioTransactionRequestDto, long portfolioId)
     {
         var portfolio = await GetPortfolioByGivenId(portfolioId);
         var stockData = await GetStockDataByGivenSymbolAsync(portfolioTransactionRequestDto.Symbol);
@@ -84,6 +82,8 @@ public class PortfolioTransactionService(
             }
 
             await unitOfWork.CommitAsync();
+
+            return transaction;
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -93,17 +93,47 @@ public class PortfolioTransactionService(
         }
     }
 
-    private async Task HandleSellStock()
+    private async Task<PortfolioTransaction> HandleSellStock(
+        PortfolioTransactionRequestDto portfolioTransactionRequestDto, long portfolioId)
     {
-    }
-    
-    private static void ValidateQuantity(PortfolioTransactionRequestDto portfolioTransactionRequestDto,
-        PortfolioHoldingResponseDto portfolioHoldingData)
-    {
-        if (portfolioHoldingData.StockQuantity < portfolioTransactionRequestDto.Quantity)
+        var portfolio = await GetPortfolioByGivenId(portfolioId);
+        var stockData = await GetStockDataByGivenSymbolAsync(portfolioTransactionRequestDto.Symbol);
+        var portfolioHolding = await GetPortfolioHoldingByGivenId(portfolioId, stockData.Id);
+
+        // Validation for sufficient shares 
+        if (portfolioHolding.Quantity < portfolioTransactionRequestDto.Quantity)
         {
-            throw new PortfolioTransactionException("Insufficient stock holdings to complete transaction",
+            throw new PortfolioTransactionException("Insufficient shares in portfolio to complete transaction",
                 HttpStatusCode.BadRequest);
+        }
+
+        await unitOfWork.BeginTransactionAsync();
+
+        try
+        {
+            portfolioHolding.Quantity -= portfolioTransactionRequestDto.Quantity;
+            portfolio.CashBalance += portfolioTransactionRequestDto.Quantity * stockData.Price;
+
+            // Creating corresponding transaction
+            var transaction = new PortfolioTransaction
+            {
+                StockPriceAtTransaction = stockData.Price,
+                PortfolioId = portfolioId,
+                TransactionType = TransactionTypeEnum.Sell.ToString(),
+                StockId = stockData.Id,
+            };
+            await portfolioTransactionRepository.CreateTransaction(transaction);
+
+            // Since both entities are attached , simply commit the transaction so EF will persist changes.
+            await unitOfWork.CommitAsync();
+
+            return transaction;
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            await unitOfWork.RollbackAsync();
+            throw new PortfolioTransactionException("Portfolio has already been updated by another entity",
+                HttpStatusCode.Conflict);
         }
     }
 
@@ -131,16 +161,20 @@ public class PortfolioTransactionService(
         return portfolio;
     }
 
+    private async Task<PortfolioHolding> GetPortfolioHoldingByGivenId(long portfolioId, long stockId)
+    {
+        var portfolioHolding =
+            await portfolioRepository.FindPortfolioHoldingByPortfolioId(portfolioId, stockId);
 
-    // TODO : Algorithm for locking for selling/buying :
-    //      1) Utility Validation --> Request is correct -- Done 
-    //      2) Business Validation --> Portfolio existence , balance in portfolio is sufficient depending on action etc -- Done , needs testing!!
-    //      3) Begin Transaction -- > Done for buying
-    //      4) Modify and call all repositories needed -- done for buying
-    //      5) Attempt to Save Changes --> RowVersion check for optimistic locking -- done for buying
-    //      6) If error , rollback and send message appropriate to user -- exception is thrown so we are good. 
-    //      7) If all ok , Save changes in DB and notify User.
+        if (portfolioHolding is null)
+        {
+            throw new PortfolioException(
+                $"Portfolio with ID {portfolioId} doesn't contain shares of the requested stock",
+                HttpStatusCode.NotFound);
+        }
+
+        return portfolioHolding;
+    }
     
-    // Todo : Implementation done for buy stock. Needs in every step manual testing to see if all is good. Also
-    //      Also to manually test again entire flow , because we have removed an entity !!! 
+    // Todo : Proceed with manual testing of both buying stocks and selling and different test cases. 
 }

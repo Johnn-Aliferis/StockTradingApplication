@@ -21,7 +21,7 @@ public class PortfolioRepository(AppDbContext context, ILogger<PortfolioReposito
     {
         return await _portfolios.FindAsync(portfolioId);
     }
-
+    
     public async Task DeletePortfolioAsync(Portfolio portfolio)
     {
         _portfolios.Remove(portfolio);
