@@ -2,7 +2,7 @@
 
 public class StockDataDto
 {
-    public required long Id { get; set; }
+    public long Id { get; set; }
     public required string Symbol { get; set; }
     public required string Name { get; set; }
     public required string Currency { get; set; }

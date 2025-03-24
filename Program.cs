@@ -47,7 +47,7 @@ builder.Services.AddSingleton<ExceptionResponseFactory>();
 builder.Services.AddSingleton<ValidationExceptionHandler>();
 builder.Services.AddSingleton<StockClientExceptionHandler>();
 builder.Services.AddSingleton<PortfolioExceptionHandler>();
-builder.Services.AddSingleton<PortfolioTransactionException>();
+builder.Services.AddSingleton<PortfolioTransactionExceptionHandler>();
 builder.Services.AddSingleton<GeneralExceptionHandler>();
 
 builder.Services.AddTransient<IExternalStockService, ExternalStockService>();

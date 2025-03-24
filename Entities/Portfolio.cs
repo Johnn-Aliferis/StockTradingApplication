@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace StockTradingApplication.Entities;
 
 [Table("portfolio")]
-public class Portfolio : BaseEntity
+public class Portfolio : ConcurrentParentEntity
 {
     [Required]
     [ForeignKey("AppUser")]
@@ -14,9 +14,6 @@ public class Portfolio : BaseEntity
     [Required]
     [Column("cash_balance")]
     public decimal CashBalance { get; set; }
-    
-    [Timestamp]
-    public byte[] RowVersion { get; set; }
     
     public AppUser AppUser { get; set; } 
     
