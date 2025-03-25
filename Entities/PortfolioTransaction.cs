@@ -11,6 +11,10 @@ public class PortfolioTransaction : BaseEntity
     public decimal StockPriceAtTransaction { get; set; }
     
     [Required]
+    [Column("stock_quantity_at_transaction")]
+    public decimal Quantity { get; set; }
+    
+    [Required]
     [Column("transaction_type")]
     public required string TransactionType { get; set; }
 

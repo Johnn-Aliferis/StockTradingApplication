@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using StockTradingApplication.Common;
 using StockTradingApplication.DTOs;
@@ -12,23 +13,26 @@ namespace StockTradingApplication.Services.Implementations;
 public class PortfolioTransactionService(
     IUnitOfWork unitOfWork,
     IPortfolioRepository portfolioRepository,
-    IStockRepository stockRepository,
-    IPortfolioTransactionRepository portfolioTransactionRepository)
+    IPortfolioTransactionRepository portfolioTransactionRepository, 
+    IStockDbService stockDbService,
+    IMapper mapper)
     : IPortfolioTransactionService
 {
-    public async Task<PortfolioTransaction> BuyStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto,
+    public async Task<PortfolioTransactionResponseDto> BuyStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto,
         long portfolioId)
     {
         ValidationService.ValidateTransactionRequestInput(portfolioTransactionRequestDto);
-        return await HandleBuyStock(portfolioTransactionRequestDto, portfolioId);
+        var transaction = await HandleBuyStock(portfolioTransactionRequestDto, portfolioId);
+        return mapper.Map<PortfolioTransactionResponseDto>(transaction);
     }
 
-    public async Task<PortfolioTransaction> SellStockAsync(
+    public async Task<PortfolioTransactionResponseDto> SellStockAsync(
         PortfolioTransactionRequestDto portfolioTransactionRequestDto,
         long portfolioId)
     {
         ValidationService.ValidateTransactionRequestInput(portfolioTransactionRequestDto);
-        return await HandleSellStock(portfolioTransactionRequestDto, portfolioId);
+        var transaction = await HandleSellStock(portfolioTransactionRequestDto, portfolioId);
+        return mapper.Map<PortfolioTransactionResponseDto>(transaction);
     }
 
     private async Task<PortfolioTransaction> HandleBuyStock(
@@ -36,8 +40,8 @@ public class PortfolioTransactionService(
     {
         var portfolio = await GetPortfolioByGivenId(portfolioId);
         var stockData = await GetStockDataByGivenSymbolAsync(portfolioTransactionRequestDto.Symbol);
-
-        var requestedPrice = portfolioTransactionRequestDto.Quantity * stockData.Price;
+        
+        var requestedPrice = portfolioTransactionRequestDto.Quantity * stockData.Close;
 
         // Validation for sufficient funds
         if (portfolio.CashBalance < requestedPrice)
@@ -54,9 +58,10 @@ public class PortfolioTransactionService(
             // Creating corresponding transaction
             var transaction = new PortfolioTransaction
             {
-                StockPriceAtTransaction = stockData.Price,
+                StockPriceAtTransaction = stockData.Close,
                 PortfolioId = portfolioId,
                 TransactionType = TransactionTypeEnum.Buy.ToString(),
+                Quantity = portfolioTransactionRequestDto.Quantity,
                 StockId = stockData.Id,
             };
             await portfolioTransactionRepository.CreateTransaction(transaction);
@@ -112,14 +117,15 @@ public class PortfolioTransactionService(
         try
         {
             portfolioHolding.Quantity -= portfolioTransactionRequestDto.Quantity;
-            portfolio.CashBalance += portfolioTransactionRequestDto.Quantity * stockData.Price;
+            portfolio.CashBalance += portfolioTransactionRequestDto.Quantity * stockData.Close;
 
             // Creating corresponding transaction
             var transaction = new PortfolioTransaction
             {
-                StockPriceAtTransaction = stockData.Price,
+                StockPriceAtTransaction = stockData.Close,
                 PortfolioId = portfolioId,
                 TransactionType = TransactionTypeEnum.Sell.ToString(),
+                Quantity = portfolioTransactionRequestDto.Quantity,
                 StockId = stockData.Id,
             };
             await portfolioTransactionRepository.CreateTransaction(transaction);
@@ -137,9 +143,9 @@ public class PortfolioTransactionService(
         }
     }
 
-    private async Task<Stock> GetStockDataByGivenSymbolAsync(string symbol)
+    private async Task<StockDataDto> GetStockDataByGivenSymbolAsync(string symbol)
     {
-        var stock = await stockRepository.GetStockAsync(symbol);
+        var stock = await stockDbService.GetStockAsync(symbol);
 
         if (stock is null)
         {
@@ -175,6 +181,4 @@ public class PortfolioTransactionService(
 
         return portfolioHolding;
     }
-    
-    // Todo : Proceed with manual testing of both buying stocks and selling and different test cases. 
 }

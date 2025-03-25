@@ -38,7 +38,7 @@ public class ExceptionResponseFactory(
                 break;
 
             case PortfolioTransactionExceptionHandler portfolioTransactionHandler:
-                await portfolioTransactionHandler.HandleResponseAsync(context, (PortfolioException)exception);
+                await portfolioTransactionHandler.HandleResponseAsync(context, (PortfolioTransactionException)exception);
                 break;
 
             case GeneralExceptionHandler generalHandler:

@@ -75,8 +75,8 @@ public class StockDbServiceCachingDecorator(
             return updatedStocks;
         }
 
-        await UpdateStockCacheAsync(stockDataDtos);
-        await UpdateFullStockCacheAsync(stockDataDtos);
+        await UpdateStockCacheAsync(updatedStocks);
+        await UpdateFullStockCacheAsync(updatedStocks);
         
         return updatedStocks;
     }

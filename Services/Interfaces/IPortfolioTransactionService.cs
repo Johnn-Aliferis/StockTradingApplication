@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using StockTradingApplication.DTOs;
-using StockTradingApplication.Entities;
+﻿using StockTradingApplication.DTOs;
 
 namespace StockTradingApplication.Services.Interfaces;
 
 public interface IPortfolioTransactionService
 {
-    Task<PortfolioTransaction> BuyStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto, long portfolioId);
+    Task<PortfolioTransactionResponseDto> BuyStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto, long portfolioId);
 
-    Task<PortfolioTransaction> SellStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto, long portfolioId);
+    Task<PortfolioTransactionResponseDto> SellStockAsync(PortfolioTransactionRequestDto portfolioTransactionRequestDto, long portfolioId);
 }

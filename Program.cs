@@ -59,6 +59,9 @@ builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IPortfolioService, PortfolioService>();
 builder.Services.AddTransient<IPortfolioRepository, PortfolioRepository>();
+builder.Services.AddTransient<IPortfolioTransactionService, PortfolioTransactionService>();
+builder.Services.AddTransient<IPortfolioTransactionRepository, PortfolioTransactionRepository>();
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<ValidationService>();
 
 builder.Services.Decorate<IStockRepository, StockRepositoryLoggingDecorator>();
@@ -70,6 +73,7 @@ builder.Services.AddAutoMapper(typeof(StockHistoryProfile));
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(Portfolio));
 builder.Services.AddAutoMapper(typeof(PortfolioHolding));
+builder.Services.AddAutoMapper(typeof(PortfolioTransaction));
 
 var app = builder.Build();
 
