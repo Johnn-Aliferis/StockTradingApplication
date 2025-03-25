@@ -13,7 +13,7 @@ public class PortfolioService(
     IPortfolioRepository portfolioRepository,
     IUserRepository userRepository) : IPortfolioService
 {
-    public async Task<PortfolioResponseDto> CreatePortfolioAsync(CreatePortfolioRequestDto createPortfolioRequest)
+    public async Task<PortfolioResponseDto> CreatePortfolioAsync(PortfolioRequestDto createPortfolioRequest)
     {
         var user = await userRepository.GetUserByIdAsync(createPortfolioRequest.UserId);
 
@@ -26,6 +26,19 @@ public class PortfolioService(
 
         var savedPortfolio = await portfolioRepository.SavePortfolioAsync(portfolio);
 
+        return mapper.Map<PortfolioResponseDto>(savedPortfolio);
+    }
+
+    public async Task<PortfolioResponseDto> AddPortfolioBalance(PortfolioRequestDto portfolioRequest, long porfolioId)
+    {
+        var existingPortfolio = await portfolioRepository.FindPortfolioById(porfolioId);
+        
+        ValidationService.ValidateUpdateCashBalance(existingPortfolio!);
+        
+        existingPortfolio!.CashBalance += portfolioRequest.CashBalance;
+        
+        var savedPortfolio = await portfolioRepository.SavePortfolioAsync(existingPortfolio);
+        
         return mapper.Map<PortfolioResponseDto>(savedPortfolio);
     }
 

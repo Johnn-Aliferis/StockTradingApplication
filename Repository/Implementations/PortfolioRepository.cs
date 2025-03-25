@@ -32,7 +32,17 @@ public class PortfolioRepository(AppDbContext context, ILogger<PortfolioReposito
     {
         try
         {
-            await _portfolios.AddAsync(portfolio);
+            var existingPortfolio = await _portfolios.FindAsync(portfolio.Id);
+            
+            if (existingPortfolio != null)
+            {
+                context.Entry(existingPortfolio).CurrentValues.SetValues(portfolio);
+            }
+            else
+            {
+                await _portfolios.AddAsync(portfolio);
+            }
+            
             await context.SaveChangesAsync();
             return portfolio;
         }

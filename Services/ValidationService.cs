@@ -9,7 +9,8 @@ public class ValidationService
 {
     private const string UserExists = "User already exists";
     private const string PortfolioExists = "A Portfolio for this user already exists";
-    private const string UserDoesNotExist = "The provided id does not match to a registered user";
+    private const string PortfolioNotExists = "The id provided does not correspond to a Portfolio";
+    private const string UserDoesNotExist = "The provided user id does not match to a registered user";
     private const string InvalidTransactionRequest = "Invalid Transaction Request";
     private const string InvalidTransactionRequestQuantity = "Stock Quantity is invalid";
     private const string InvalidTransactionRequestSymbol = "Invalid Symbol Received";
@@ -24,6 +25,14 @@ public class ValidationService
         if (portfolio is not null)
         {
             throw new ValidationException(PortfolioExists);
+        }
+    }
+    
+    public static void ValidateUpdateCashBalance(Portfolio portfolio)
+    {
+        if (portfolio is null)
+        {
+            throw new ValidationException(PortfolioNotExists);
         }
     }
 

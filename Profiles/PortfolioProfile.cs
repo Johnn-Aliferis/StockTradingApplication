@@ -8,7 +8,7 @@ public class PortfolioProfile : Profile
 {
     public PortfolioProfile()
     {
-        CreateMap<CreatePortfolioRequestDto, Portfolio>()
+        CreateMap<PortfolioRequestDto, Portfolio>()
             .ForMember(dest => dest.CashBalance, opt => opt.Ignore())
             .ForMember(dest => dest.AppUser, opt => opt.Ignore())
             .ForMember(dest => dest.Transactions, opt => opt.Ignore())

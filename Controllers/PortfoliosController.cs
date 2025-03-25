@@ -9,10 +9,18 @@ namespace StockTradingApplication.Controllers;
 public class PortfoliosController(IPortfolioService portfolioService) : ControllerBase
 {
     [HttpPost]
-    public async Task<ActionResult> CreatePortfolio([FromBody] CreatePortfolioRequestDto portfolioRequest)
+    public async Task<ActionResult> CreatePortfolio([FromBody] PortfolioRequestDto portfolioRequest)
     {
         var createdPortfolio = await portfolioService.CreatePortfolioAsync(portfolioRequest);
         return Created($"api/portfolios/{createdPortfolio.Id}", createdPortfolio);
+    }
+    
+    [HttpPost]
+    [Route("{portfolioId:long}/balance")] // for simplicity , only adding funds.
+    public async Task<ActionResult> AddPortfolioBalance([FromBody] PortfolioRequestDto portfolioRequest, long portfolioId)
+    {
+        var createdPortfolio = await portfolioService.AddPortfolioBalance(portfolioRequest, portfolioId);
+        return Ok(createdPortfolio);
     }
     
     [HttpDelete("{portfolioId:long}")]
