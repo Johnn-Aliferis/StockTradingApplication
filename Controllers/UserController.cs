@@ -5,7 +5,7 @@ using StockTradingApplication.Services.Interfaces;
 namespace StockTradingApplication.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/users")]
 public class UsersController(IUserService userService) : ControllerBase
 {
     [HttpPost]

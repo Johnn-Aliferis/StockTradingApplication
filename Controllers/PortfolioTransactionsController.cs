@@ -5,7 +5,7 @@ using StockTradingApplication.Services.Interfaces;
 namespace StockTradingApplication.Controllers;
 
 [ApiController]
-[Route("api/portfolios/{portfolioId:long}/transactions")]
+[Route("api/v1/portfolios/{portfolioId:long}/transactions")]
 public class PortfolioTransactionsController(IPortfolioTransactionService portfolioTransactionService) : ControllerBase
 {
     [HttpPost("buy")]
