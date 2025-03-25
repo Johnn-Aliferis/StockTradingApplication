@@ -6,6 +6,7 @@ public interface IPortfolioRepository
 {
     Task<Portfolio?> GetPortfolioByUserIdAsync(long userId);
     Task<Portfolio?> FindPortfolioById(long portfolioId);
+    Task<List<PortfolioHolding>> FindPortfolioHoldingByPortfolioId(long portfolioId);
     Task DeletePortfolioAsync(Portfolio portfolioId);
     Task<Portfolio> SavePortfolioAsync(Portfolio portfolio);
     Task<PortfolioHolding> SavePortfolioHoldingAsync(PortfolioHolding portfolioHolding);

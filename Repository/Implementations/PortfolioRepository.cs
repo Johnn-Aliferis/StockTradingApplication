@@ -75,4 +75,11 @@ public class PortfolioRepository(AppDbContext context, ILogger<PortfolioReposito
         return await _portfoliosHoldings.FirstOrDefaultAsync(holding =>
             holding.PortfolioId == portfolioId && holding.StockId == stockId);
     }
+    
+    public async Task<List<PortfolioHolding>> FindPortfolioHoldingByPortfolioId(long portfolioId)
+    {
+        return await _portfoliosHoldings
+            .Where(h => h.PortfolioId == portfolioId)
+            .ToListAsync();
+    }
 }

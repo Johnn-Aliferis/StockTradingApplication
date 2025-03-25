@@ -29,4 +29,20 @@ public class PortfoliosController(IPortfolioService portfolioService) : Controll
         await portfolioService.DeletePortfolioAsync(portfolioId);
         return NoContent();
     }
+    
+    [HttpGet]
+    [Route("{portfolioId:long}")]
+    public async Task<ActionResult> GetPortfolioById(long portfolioId)
+    {
+        var portfolio = await portfolioService.GetPortfolioAsync(portfolioId);
+        return Ok(portfolio);
+    }
+    
+    [HttpGet]
+    [Route("{portfolioId:long}/holdings")]
+    public async Task<ActionResult> GetPortfolioHolding(long portfolioId)
+    {
+        var holdings = await portfolioService.GetPortfolioHoldingsByPortfolioIdAsync(portfolioId);
+        return Ok(holdings);
+    }
 }

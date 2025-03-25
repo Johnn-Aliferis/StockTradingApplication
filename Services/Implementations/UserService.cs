@@ -17,7 +17,13 @@ public class UserService(IUserRepository userRepository, IMapper mapper) : IUser
         var userToCreate = mapper.Map<AppUser>(createUserRequestDto);
 
         var userCreated = await userRepository.SaveUserAsync(userToCreate);
-        
+
         return mapper.Map<AppUserResponseDto>(userCreated);
+    }
+
+    public async Task<List<AppUserResponseDto>> FindUsersAsync()
+    {
+        var users = await userRepository.GetUsersAsync();
+        return mapper.Map<List<AppUserResponseDto>>(users);
     }
 }

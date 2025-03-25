@@ -60,9 +60,9 @@ public class PortfolioService(
         return existingPortfolio is not null ? mapper.Map<PortfolioResponseDto>(existingPortfolio) : null;
     }
     
-    public async Task<PortfolioHoldingResponseDto?> GetPortfolioHoldingByPortfolioAndStockIdAsync(long portfolioId, long stockId)
+    public async Task<List<PortfolioHoldingResponseDto>> GetPortfolioHoldingsByPortfolioIdAsync(long portfolioId)
     {
-        var portfolioHolding = await portfolioRepository.FindPortfolioHoldingByPortfolioId(portfolioId, stockId);
-        return portfolioHolding is not null ? mapper.Map<PortfolioHoldingResponseDto>(portfolioHolding) : null;
+        var holdings = await portfolioRepository.FindPortfolioHoldingByPortfolioId(portfolioId);
+        return mapper.Map<List<PortfolioHoldingResponseDto>>(holdings);
     }
 }

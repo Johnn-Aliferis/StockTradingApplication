@@ -14,4 +14,11 @@ public class UsersController(IUserService userService) : ControllerBase
         var createdUser = await userService.CreateUserAsync(createUserRequestDto);
         return Created($"/api/users/{createdUser.Id}", createdUser);
     }
+
+    [HttpGet]
+    public async Task<ActionResult> GetUsersAsync()
+    {
+        var users = await userService.FindUsersAsync();
+        return Ok(users);
+    }
 }
