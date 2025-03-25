@@ -15,9 +15,9 @@ public class Portfolio : ConcurrentParentEntity
     [Column("cash_balance")]
     public decimal CashBalance { get; set; }
     
-    public AppUser AppUser { get; set; } 
+    public virtual AppUser AppUser { get; set; } 
     
-    public ICollection<PortfolioTransaction> Transactions { get; set; }
+    public virtual ICollection<PortfolioTransaction> Transactions { get; set; }
     
-    public ICollection<PortfolioHolding> Holdings { get; set; }
+    public virtual ICollection<PortfolioHolding> Holdings { get; set; }
 }

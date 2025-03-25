@@ -22,5 +22,5 @@ public class Stock : BaseEntity
     [Column("stock_currency")]
     public string Currency { get; set; }
     
-    public ICollection<StockHistory> StockHistories { get; set; }
+    public virtual ICollection<StockHistory> StockHistories { get; set; }
 }

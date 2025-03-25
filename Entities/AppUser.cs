@@ -10,5 +10,5 @@ public class AppUser : BaseEntity
     [Column("username")]
     public string Username { get; set; }
     
-    public Portfolio Portfolio { get; set; }
+    public virtual Portfolio Portfolio { get; set; }
 }

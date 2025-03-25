@@ -16,11 +16,19 @@ public class PortfoliosController(IPortfolioService portfolioService) : Controll
     }
     
     [HttpPost]
-    [Route("{portfolioId:long}/balance")] // for simplicity , only adding funds.
+    [Route("{portfolioId:long}/cash-balance")] // for simplicity , only adding funds.
     public async Task<ActionResult> AddPortfolioBalance([FromBody] PortfolioRequestDto portfolioRequest, long portfolioId)
     {
         var createdPortfolio = await portfolioService.AddPortfolioBalance(portfolioRequest, portfolioId);
         return Ok(createdPortfolio);
+    }
+    
+    [HttpGet]
+    [Route("{portfolioId:long}/holding-values")]
+    public async Task<ActionResult> GetCumulativeStockBalance(long portfolioId)
+    {
+        var totalStockBalance = await portfolioService.CalculateHoldingsBalance(portfolioId);
+        return Ok(totalStockBalance);
     }
     
     [HttpDelete("{portfolioId:long}")]

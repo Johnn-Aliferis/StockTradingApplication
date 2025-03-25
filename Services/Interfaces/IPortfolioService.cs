@@ -9,4 +9,5 @@ public interface IPortfolioService
     Task DeletePortfolioAsync(long portfolioId);
     Task<PortfolioResponseDto?> GetPortfolioAsync(long portfolioId);
     Task<List<PortfolioHoldingResponseDto>> GetPortfolioHoldingsByPortfolioIdAsync(long portfolioId);
+    Task<decimal> CalculateHoldingsBalance(long portfolioId);
 }

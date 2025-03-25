@@ -20,7 +20,7 @@ public static class DatabaseExtensions
                                $"Password={Environment.GetEnvironmentVariable("POSTGRES_PASSWORD")}";
 
         services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(connectionString));
+            options.UseNpgsql(connectionString).UseLazyLoadingProxies());
 
         return services;
     }

@@ -15,12 +15,12 @@ public class PortfolioHolding : BaseEntity
     [Column("stock_id")]
     public long StockId { get; set; }
 
-    public Stock Stock { get; set; }
+    public virtual Stock Stock { get; set; }
 
     [Required]
     [ForeignKey("Portfolio")]
     [Column("portfolio_id")]
     public long PortfolioId { get; set; }
 
-    public Portfolio Portfolio { get; set; }
+    public virtual Portfolio Portfolio { get; set; }
 }
