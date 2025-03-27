@@ -1,8 +1,10 @@
+using AspNetCoreRateLimit;
 using DotNetEnv;
+using Microsoft.Extensions.Caching.Distributed;
+using StackExchange.Redis;
 using StockTradingApplication.Decorators;
 using StockTradingApplication.Entities;
 using StockTradingApplication.ExceptionHandlers.Handlers;
-using StockTradingApplication.Exceptions;
 using StockTradingApplication.Extensions;
 using StockTradingApplication.Middleware;
 using StockTradingApplication.Options;
@@ -27,12 +29,28 @@ if (builder.Environment.IsDevelopment())
 // For Database
 builder.Services.AddDatabaseServices();
 
+var redisConnection = Environment.GetEnvironmentVariable("REDIS_CONNECTION");
+
 // For Redis-Cache
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    var redisConnection = Environment.GetEnvironmentVariable("REDIS_CONNECTION");
     options.Configuration = redisConnection;
 });
+
+// Rate limiting 
+builder.Services.AddSingleton<IConnectionMultiplexer>(
+    ConnectionMultiplexer.Connect(redisConnection!)
+);
+
+builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
+
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+builder.Services.AddSingleton<IIpPolicyStore, DistributedCacheIpPolicyStore>();
+builder.Services.AddSingleton<IRateLimitCounterStore, DistributedCacheRateLimitCounterStore>();
+builder.Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+builder.Services.AddSingleton<IDistributedCache, Microsoft.Extensions.Caching.StackExchangeRedis.RedisCache>();
 
 
 // For scheduled job
@@ -88,6 +106,9 @@ app.Services.EnsureDatabaseCreated();
 
 //Middleware for global exception handling.
 app.UseMiddleware<GlobalExceptionMiddleware>();
+
+//Rate Limiter Middleware
+app.UseIpRateLimiting();
 
 app.UseHttpsRedirection();
 

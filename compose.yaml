@@ -40,6 +40,7 @@
       - redis_data:/bitnami/redis/data
     environment:
       ALLOW_EMPTY_PASSWORD: "yes"
+      ENABLE_RATE_LIMIT_CACHE_EXPIRATION: "true"
 
 volumes:
   postgres_data:
