@@ -6,6 +6,7 @@ using StockTradingApplication.Decorators;
 using StockTradingApplication.Entities;
 using StockTradingApplication.ExceptionHandlers.Handlers;
 using StockTradingApplication.Extensions;
+using StockTradingApplication.Health;
 using StockTradingApplication.Middleware;
 using StockTradingApplication.Options;
 using StockTradingApplication.Profiles;
@@ -93,6 +94,15 @@ builder.Services.AddAutoMapper(typeof(Portfolio));
 builder.Services.AddAutoMapper(typeof(PortfolioHolding));
 builder.Services.AddAutoMapper(typeof(PortfolioTransaction));
 
+// Health Checks
+builder.Services.AddHealthChecks()
+    .AddRedis(
+        redisConnection!,
+        name: "Redis",
+        timeout: TimeSpan.FromSeconds(2)
+    )
+    .AddCheck<CustomHealthCheck>("app_running");
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -103,6 +113,29 @@ if (app.Environment.IsDevelopment())
 
 // Ensure tables are created -- Code First approach.
 app.Services.EnsureDatabaseCreated();
+
+//Health check 
+app.UseHealthChecks("/health");
+app.UseHealthChecks("/health/detailed", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        var response = new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(e => new
+            {
+                component = e.Key,
+                status = e.Value.Status.ToString(),
+                description = e.Value.Description ?? "N/A"
+            }),
+            timestamp = DateTime.UtcNow
+        };
+
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsJsonAsync(response);
+    }
+});
 
 //Middleware for global exception handling.
 app.UseMiddleware<GlobalExceptionMiddleware>();

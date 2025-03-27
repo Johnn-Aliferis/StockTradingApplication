@@ -21,6 +21,13 @@ public static class DatabaseExtensions
 
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(connectionString).UseLazyLoadingProxies());
+        
+        services.AddHealthChecks()
+            .AddNpgSql(
+                connectionString,
+                name: "postgresql",
+                timeout: TimeSpan.FromSeconds(2)
+            );
 
         return services;
     }
