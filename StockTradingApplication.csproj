@@ -26,4 +26,26 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="StockTradingApplication.Tests\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="StockTradingApplication.Tests\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="StockTradingApplication.Tests\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="StockTradingApplication.Tests\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="StockTradingApplication.Tests\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="StockTradingApplication.Tests\obj\project.packagespec.json" />
+      <_ContentIncludedByDefault Remove="StockTradingApplication.Tests\obj\StockTradingApplication.Tests.csproj.nuget.dgspec.json" />
+    </ItemGroup>
+
 </Project>
