@@ -1,4 +1,4 @@
-﻿namespace StockTradingApplication.Configuration;
+﻿namespace StockTradingApplication.Options;
 
 public class StockClientOptions
 {

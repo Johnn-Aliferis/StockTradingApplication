@@ -8,11 +8,44 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
+        <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="9.0.0" />
+        <PackageReference Include="AspNetCoreRateLimit" Version="5.0.0" />
+        <PackageReference Include="AspNetCoreRateLimit.Redis" Version="2.0.0" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+        <PackageReference Include="DotNetEnv" Version="3.1.1" />
+        <PackageReference Include="EFCore.BulkExtensions" Version="9.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.0-preview.1.25120.3" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" />
+        <PackageReference Include="Quartz" Version="3.13.1" />
+        <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.13.1" />
+        <PackageReference Include="Quartz.Extensions.Hosting" Version="3.13.1" />
+        <PackageReference Include="Scrutor" Version="6.0.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Models\" />
+      <Compile Remove="StockTradingApplication.Tests\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="StockTradingApplication.Tests\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="StockTradingApplication.Tests\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="StockTradingApplication.Tests\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="StockTradingApplication.Tests\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="StockTradingApplication.Tests\obj\project.packagespec.json" />
+      <_ContentIncludedByDefault Remove="StockTradingApplication.Tests\obj\StockTradingApplication.Tests.csproj.nuget.dgspec.json" />
     </ItemGroup>
 
 </Project>

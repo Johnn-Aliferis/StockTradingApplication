@@ -1,6 +1,47 @@
 ﻿services:
-  stocktradingapplication:
-    image: stocktradingapplication
-    build:
-      context: .
-      dockerfile: Dockerfile
+#  stocktradingapplication:
+#    image: stocktradingapplication
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "5000:5000"
+#      - "5050:5050"   # Debug
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: stock_trading_DB
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+  redis:
+    image: docker.io/bitnami/redis:7.0.12-debian-11-r2
+    container_name: Cache_Redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/bitnami/redis/data
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+      ENABLE_RATE_LIMIT_CACHE_EXPIRATION: "true"
+
+volumes:
+  postgres_data:
+  redis_data:

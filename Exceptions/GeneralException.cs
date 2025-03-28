@@ -2,10 +2,7 @@
 
 namespace StockTradingApplication.Exceptions;
 
-public class GeneralException : Exception
+public class GeneralException(string message, HttpStatusCode status) : Exception(message)
 {
-    public HttpStatusCode Status { get; }
-    protected GeneralException(string message, HttpStatusCode status) : base(message) {
-        Status = status;
-    }
+    public HttpStatusCode Status { get; } = status;
 }

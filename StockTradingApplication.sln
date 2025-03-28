@@ -1,11 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# 
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockTradingApplication", "StockTradingApplication.csproj", "{D27EB76A-464F-4AC5-BC03-867AEF63E09E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{89713255-EB05-4FF0-81B2-98C846906C07}"
 	ProjectSection(SolutionItems) = preProject
 		compose.yaml = compose.yaml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockTradingApplication.Tests", "StockTradingApplication.Tests\StockTradingApplication.Tests.csproj", "{D4FC223E-ED0F-4B16-992F-583B9C434495}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,5 +20,9 @@ Global
 		{D27EB76A-464F-4AC5-BC03-867AEF63E09E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D27EB76A-464F-4AC5-BC03-867AEF63E09E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D27EB76A-464F-4AC5-BC03-867AEF63E09E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4FC223E-ED0F-4B16-992F-583B9C434495}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4FC223E-ED0F-4B16-992F-583B9C434495}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4FC223E-ED0F-4B16-992F-583B9C434495}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4FC223E-ED0F-4B16-992F-583B9C434495}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
