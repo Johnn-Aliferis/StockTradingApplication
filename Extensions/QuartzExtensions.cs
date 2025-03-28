@@ -15,7 +15,7 @@ public static class QuartzExtensions
                 opts.ForJob(jobKey)
                     .WithIdentity("FetchStockDataJobTrigger")
                     .WithSimpleSchedule(schedule =>
-                        schedule.WithIntervalInSeconds(180)
+                        schedule.WithIntervalInSeconds(60)
                             .RepeatForever()));
         });
 
